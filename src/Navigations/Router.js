@@ -6,6 +6,7 @@ import LoginScreen from '../Screens/Login/index'
 import RegisterScreen from '../Screens/Register/index'
 import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
+import ResetPasswordScreen from '../Screens/ResetPassword/index'
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,13 @@ const Router = () => {
                     name="OTP"
                     component={OtpScreen}
                     options={{ title: 'Verification', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
+                        alignItems: 'center',
+                      }, headerTitleAlign: 'center' }}
+                />
+                <Stack.Screen
+                    name="ResetPassword"
+                    component={ResetPasswordScreen}
+                    options={{ title: 'Reset Password', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
                         alignItems: 'center',
                       }, headerTitleAlign: 'center' }}
                 />

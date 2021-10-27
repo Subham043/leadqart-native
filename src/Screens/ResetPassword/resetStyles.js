@@ -41,19 +41,11 @@ const styles = StyleSheet.create({
         fontSize:18,
         marginBottom:10
     },
-    error:{
-        textAlign:'left',
-        fontSize:18,
-        color:'red',
-        marginTop:-20,
-        marginBottom:25
-    },
     input:{
         width:'100%',
         height:50,
         textAlign:'left',
         borderColor: '#ccc',
-        color: 'black',
         borderWidth: 1,
         padding:10,
         borderRadius:3,
@@ -82,17 +74,7 @@ const styles = StyleSheet.create({
     signUpBtnTxt:{
         color:'#ffa200',
         fontWeight: 'bold',
-    },
-    loader:{
-        width:'100%',
-        height:Dimensions.get('window').height,
-        backgroundColor:'rgba(0,0,0,0.5)',
-        position:'absolute',
-        top:0,
-        zIndex:100000,
-        justifyContent: 'center',
-    },
-    
+    }
 })
 
 

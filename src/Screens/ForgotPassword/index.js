@@ -15,7 +15,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                 <View style={styles.formContainer}>
                     <Text style={styles.label}>Email</Text>
                     <TextInput style={styles.input} placeholder="Email" />
-                    <TouchableOpacity onPress={()=>navigation.navigate('OTP')}>
+                    <TouchableOpacity onPress={()=>navigation.navigate('ResetPassword')}>
                         <Text style={styles.signInBtn}>Reset Password</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>navigation.navigate('Signin')}>

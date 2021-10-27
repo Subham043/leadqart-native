@@ -6,7 +6,7 @@ import styles from './styles'
 const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.mainContainer}>
-            <StatusBar style="light" />
+            <StatusBar style="light" backgroundColor="#ffa200" />
             <ImageBackground source={require('../../../assets/images/waves-new.png')} style={styles.backgroundImage} />
             <View style={styles.innerContainer}>
 
