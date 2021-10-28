@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import { Animated, Text, Dimensions, View } from 'react-native'
 import styles from './styles'
 
-const Toaster = (props) => {
+const ErrorToaster = (props) => {
     const translation = useRef(new Animated.Value(-Dimensions.get('window').width)).current;
 
     if(props.status==true){
@@ -32,4 +32,4 @@ const Toaster = (props) => {
     )
 }
 
-export default Toaster
+export default ErrorToaster

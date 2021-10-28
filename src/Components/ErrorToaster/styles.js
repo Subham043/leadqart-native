@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
         paddingVertical:10,
         paddingHorizontal:5,
         borderRadius:2,
-        backgroundColor:'#d4edda',
-        borderColor:'#d4edda',
+        backgroundColor:'#f8d7da',
+        borderColor:'#f8d7da',
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     text:{
-        color:'green',
+        color:'red',
         fontSize:14,
         fontWeight:'bold',
         textAlign: 'center'

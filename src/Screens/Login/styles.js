@@ -49,7 +49,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding:10,
         borderRadius:3,
-        marginBottom:25
+        marginBottom:25,
+        color: '#000'
     },
     forgotBtn:{
         textAlign:'right',
@@ -74,7 +75,14 @@ const styles = StyleSheet.create({
     signUpBtnTxt:{
         color:'#ffa200',
         fontWeight: 'bold',
-    }
+    },
+    error:{
+        textAlign:'left',
+        fontSize:18,
+        color:'red',
+        marginTop:-20,
+        marginBottom:25
+    },
 })
 
 

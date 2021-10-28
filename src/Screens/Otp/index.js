@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { View, ImageBackground, Image,  Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native'
+import { View, ImageBackground, Image,  Text, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
 import styles from './styles'
 import axios from "../../../axios"
 import Loader from '../../Components/Loader'
 import Toaster from '../../Components/Toaster'
+import ErrorToaster from '../../Components/ErrorToaster'
+import SuccessPopUp from '../../Components/SuccessPopUp'
 
 const OtpScreen = ({ route, navigation }) => {
+
+    const [displayTranslate, setDisplayTranslate] = useState(true)
+    const [displayTranslate2, setDisplayTranslate2] = useState(false)
+    const [successPopUpMsg, setSuccessPopUpMsg] = useState("")
 
     const { id, msg } = route.params;
 
@@ -25,6 +31,8 @@ const OtpScreen = ({ route, navigation }) => {
     const [showLoader, setShowLoader] = useState(false)
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState(false)
+    const [showErrorToaster, setShowErrorToaster] = useState("")
+    const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
 
     const [otp, setOtp] = useState("")
     const [otpErrorValue, setOtpErrorValue] = useState("")
@@ -58,23 +66,40 @@ const OtpScreen = ({ route, navigation }) => {
         }
 
         if (otpError) {
-            console.log('error')
+            return ;
         } else {
             setShowLoader(true)
             try {
                 const response = await axios.post(`/verify/${id}`, { otp },);
                 setShowLoader(false)
-                setShowToasterMsg(response.data.message)
-                console.log(response.data.error)
-                setShowToaster(true)
-                setTimeout(() => {
-                    setShowToaster(false)
-                }, 1000);
-                // navigation.navigate('OTP', {
-                //     id: response.data.message,
-                //     msg: response.data.message,
-                //   });
-                console.log(response);
+
+                if(response?.data?.message){
+                    setSuccessPopUpMsg(response?.data?.message)
+                    setDisplayTranslate(false)
+                    setDisplayTranslate2(true)
+                }
+
+                if(response?.data?.rateLimit){
+                    setShowErrorToasterMsg(response?.data?.rateLimit)
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+                }
+
+                if(response?.data?.error){
+                    setShowErrorToasterMsg(response?.data?.error)
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+                }
+
+                if (response?.data?.errors?.otp) {
+                    setOtpError(true)
+                    setOtpErrorValue(response?.data?.errors?.otp.msg)
+                }
+
             } catch (error) {
                 setShowLoader(false)
                 console.log(error.response.data);
@@ -94,6 +119,7 @@ const OtpScreen = ({ route, navigation }) => {
                 <View style={styles.innerContainer}>
                     <Image source={require('../../../assets/images/logo.png')} style={styles.logoImage} />
                 </View>
+                {displayTranslate ?
                 <View style={styles.formContainer}>
                     <Text style={styles.label}>OTP</Text>
                     <TextInput style={otpError ? { ...styles.input, borderColor: 'red', color: 'red' } : styles.input} placeholder="OTP" placeholderTextColor={otpError ? "red" : "#ccc"} secureTextEntry={true} onChangeText={text => otpHandler(text)} defaultValue={otp} />
@@ -101,11 +127,14 @@ const OtpScreen = ({ route, navigation }) => {
                     <TouchableOpacity onPress={verify}>
                         <Text style={styles.signInBtn}>Submit</Text>
                     </TouchableOpacity>
-                </View>
-                <ImageBackground source={require('../../../assets/images/blue-waves.png')} style={styles.backgroundImage2} />
+                </View> : null }
+                {displayTranslate2 ? 
+                <SuccessPopUp status={displayTranslate2} message={successPopUpMsg} nav={navigation} /> : null }
+                <ImageBackground source={require('../../../assets/images/blue-waves.png')} style={{...styles.backgroundImage2, marginTop:displayTranslate2 ? Dimensions.get('window').height-595:Dimensions.get('window').height-680}} />
             </ScrollView>
             <Loader status={showLoader} />
             <Toaster message={showToasterMsg} status={showToaster} />
+            <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
         </View>
     )
 }

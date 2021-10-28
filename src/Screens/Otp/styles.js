@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
         transform: [
             { rotate: '180deg' },
           ],
-        marginTop:Dimensions.get('window').height-680
     },
     innerContainer:{
         width:'100%',

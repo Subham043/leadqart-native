@@ -5,6 +5,7 @@ import styles from './registerStyles'
 import axios from "../../../axios"
 import Loader from '../../Components/Loader'
 import Toaster from '../../Components/Toaster'
+import ErrorToaster from '../../Components/ErrorToaster'
 
 const RegisterScreen = ({ navigation }) => {
 
@@ -25,7 +26,9 @@ const RegisterScreen = ({ navigation }) => {
     const [cPasswordError, setCPasswordError] = useState(false)
     const [showLoader, setShowLoader] = useState(false)
     const [showToaster, setShowToaster] = useState(false)
-    const [showToasterMsg, setShowToasterMsg] = useState(false)
+    const [showToasterMsg, setShowToasterMsg] = useState("")
+    const [showErrorToaster, setShowErrorToaster] = useState(false)
+    const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
 
     const nameHandler = (text) => {
         setName(text);
@@ -158,60 +161,68 @@ const RegisterScreen = ({ navigation }) => {
         }
 
         if (nameError || emailError || phoneError || passwordError || cPasswordError) {
-            console.log('error')
+            return ;
         } else {
             setShowLoader(true)
             try {
                 const response = await axios.post('/register', { name, email, phone, password, cpassword: cPassword },);
                 setShowLoader(false)
-                setShowToasterMsg(response.data.message)
-                setShowToaster(true)
-                setTimeout(() => {
-                    setShowToaster(false)
-                }, 1000);
-                navigation.navigate('OTP', {
-                    id: response.data.id,
-                    msg: response.data.message,
-                  });
-                console.log(response);
+                if(response?.data?.message){
+                    setShowToasterMsg(response?.data?.message)
+                    setShowToaster(true)
+                    setTimeout(() => {
+                        setShowToaster(false)
+                    }, 1000);
+                    navigation.navigate('OTP', {
+                        id: response.data.id,
+                        msg: response.data.message,
+                      });
+                }
+
+                if(response?.data?.rateLimit){
+                    setShowErrorToasterMsg(response?.data?.rateLimit)
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+                }
+
+                if(response?.data?.error){
+                    setShowErrorToasterMsg(response?.data?.error)
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+                }
+
+                if (response?.data?.errors?.email) {
+                    setEmailError(true)
+                    setEmailErrorValue(response?.data?.errors?.email.msg)
+                }
+
+                if (response?.data?.errors?.name) {
+                    setNameError(true)
+                    setNameErrorValue(response?.data?.errors?.name?.msg)
+                }
+
+                if (response?.data?.errors?.phone) {
+                    setPhoneError(true)
+                    setPhoneErrorValue(response?.data?.errors?.phone?.msg)
+                }
+
+                if (response?.data?.errors?.password) {
+                    setPasswordError(true)
+                    setPasswordErrorValue(response?.data?.errors?.password?.msg)
+                }
+
+                if (response?.data?.errors?.cpassword) {
+                    setCPasswordError(true)
+                    setCPasswordErrorValue(response?.data?.errors?.cpassword?.msg)
+                }
+                
             } catch (error) {
                 setShowLoader(false)
-                console.log(error.response.data);
-                
-                if (error.response.data['errors']['email']) {
-                    setEmailError(true)
-                    setEmailErrorValue(error.response.data['errors']['email']['msg'])
-                }
-
-                if (error.response.data['errors']['name']) {
-                    setNameError(true)
-                    setNameErrorValue(error.response.data['errors']['name']['msg'])
-                }
-
-                if (error.response.data['errors']['phone']) {
-                    setPhoneError(true)
-                    setPhoneErrorValue(error.response.data['errors']['phone']['msg'])
-                }
-
-                if (error.response.data['errors']['password']) {
-                    setPasswordError(true)
-                    setPasswordErrorValue(error.response.data['errors']['password']['msg'])
-                }
-
-                if (error.response.data['errors']['cpassword']) {
-                    setCPasswordError(true)
-                    setCPasswordErrorValue(error.response.data['errors']['cpassword']['msg'])
-                }
-
-                if (error.response.data['rateLimit']) {
-                    setCPasswordError(true)
-                    setCPasswordErrorValue(error.response.data['rateLimit'])
-                }
-
-                if (error.response.data['message']) {
-                    setCPasswordError(true)
-                    setCPasswordErrorValue(error.response.data['message'])
-                }
+                console.log(error);
             }
         }
 
@@ -255,6 +266,7 @@ const RegisterScreen = ({ navigation }) => {
             </ScrollView>
             <Loader status={showLoader} />
             <Toaster message={showToasterMsg} status={showToaster} />
+            <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
         </View>
     )
 }
