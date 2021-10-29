@@ -7,6 +7,7 @@ import RegisterScreen from '../Screens/Register/index'
 import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
+import FacebookScreen from '../Screens/Facebook/index'
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ const Router = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator>
+                
                 <Stack.Screen
                     name="Home"
                     component={HomeScreen}
@@ -54,6 +56,11 @@ const Router = () => {
                         alignItems: 'center',
                       }, headerTitleAlign: 'center' }}
                 />
+                {/* <Stack.Screen
+                    name="fb"
+                    component={FacebookScreen}
+                    options={{ headerShown: false }}
+                /> */}
             </Stack.Navigator>
         </NavigationContainer>
     )

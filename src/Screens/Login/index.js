@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity } from 'react-native'
 import styles from './styles'
@@ -8,6 +9,24 @@ import Toaster from '../../Components/Toaster'
 import ErrorToaster from '../../Components/ErrorToaster'
 
 const LoginScreen = ({ navigation }) => {
+
+    useEffect(() => {
+        getDataAsync('accessToken').then((res) => {})
+    }, [getDataAsync])
+
+      const getDataAsync = async (key) => {
+        try {
+            const value = await AsyncStorage.getItem(key)
+            // await AsyncStorage.removeItem(key)
+          if(value !== null) {
+            // value previously stored
+            return(JSON.parse(value));
+          }
+        } catch(e) {
+          // error reading value
+          console.log(e);
+        }
+      }
 
     const [showLoader, setShowLoader] = useState(false)
     const [showToaster, setShowToaster] = useState(false)
@@ -87,6 +106,8 @@ const LoginScreen = ({ navigation }) => {
                     setTimeout(() => {
                         setShowToaster(false)
                     }, 1000);
+                    storeDataAsync("accessToken",response?.data.accessToken);
+                    storeDataAsync("refreshToken",response?.data.refreshToken);
                     // navigation.navigate('OTP', {
                     //     id: response.data.id,
                     //     msg: response.data.message,
@@ -128,6 +149,16 @@ const LoginScreen = ({ navigation }) => {
 
 
     }
+
+    const storeDataAsync = async (key,value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem(key, jsonValue)
+        } catch (e) {
+          // saving error
+          console.log(e);
+        }
+      }
 
 
     return (
