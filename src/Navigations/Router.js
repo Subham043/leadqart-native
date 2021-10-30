@@ -8,6 +8,8 @@ import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
 import FacebookScreen from '../Screens/Facebook/index'
+import ClientsScreen from '../Screens/Clients/index'
+import BottomTab from '../Navigations/BottomTab'
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +17,11 @@ const Router = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                
+                <Stack.Screen
+                    name="Main"
+                    component={BottomTab}
+                    options={{ headerShown: false }}
+                />
                 <Stack.Screen
                     name="Home"
                     component={HomeScreen}
@@ -24,37 +30,47 @@ const Router = () => {
                 <Stack.Screen
                     name="Signin"
                     component={LoginScreen}
-                    options={{ title: 'Sign In', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
-                        alignItems: 'center',
-                      }, headerTitleAlign: 'center' }}
+                    options={{
+                        title: 'Sign In', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 <Stack.Screen
                     name="Signup"
                     component={RegisterScreen}
-                    options={{ title: 'Sign Up', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
-                        alignItems: 'center',
-                      }, headerTitleAlign: 'center' }}
+                    options={{
+                        title: 'Sign Up', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 <Stack.Screen
                     name="ForgotPassword"
                     component={ForgotPasswordScreen}
-                    options={{ title: 'Forgot Password', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
-                        alignItems: 'center',
-                      }, headerTitleAlign: 'center' }}
+                    options={{
+                        title: 'Forgot Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 <Stack.Screen
                     name="OTP"
                     component={OtpScreen}
-                    options={{ title: 'Verification', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
-                        alignItems: 'center',
-                      }, headerTitleAlign: 'center' }}
+                    options={{
+                        title: 'Verification', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 <Stack.Screen
                     name="ResetPassword"
                     component={ResetPasswordScreen}
-                    options={{ title: 'Reset Password', headerStyle: { backgroundColor: '#33b9ff'}, headerTintColor: '#fff',headerTitleStyle: {
-                        alignItems: 'center',
-                      }, headerTitleAlign: 'center' }}
+                    options={{
+                        title: 'Reset Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 {/* <Stack.Screen
                     name="fb"

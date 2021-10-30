@@ -9,8 +9,8 @@ export default function App() {
   useEffect(async () => {
     const accessToken = await getDataAsync('accessToken')
     const refreshToken = await getDataAsync('refreshToken')
-    console.log("accessToken : ",accessToken)
-    console.log("refreshToken : ",refreshToken)
+    // console.log("accessToken : ",accessToken)
+    // console.log("refreshToken : ",refreshToken)
     if(accessToken === null || accessToken === null) {
       if(refreshToken !== null || refreshToken !== null) {
         const response = await axios.get('/refresh-token', {
@@ -21,11 +21,11 @@ export default function App() {
         if(response?.data?.message){
             storeDataAsync("accessToken",response?.data.accessToken);
             storeDataAsync("refreshToken",response?.data.refreshToken);
-            console.log(response?.data?.message);
+            // console.log(response?.data?.message);
         }
 
         if(response?.data?.error){
-          console.log(response?.data?.error);
+          // console.log(response?.data?.error);
         }
       }
     }
@@ -36,9 +36,6 @@ export default function App() {
         const value = await AsyncStorage.getItem(key)
         // await AsyncStorage.removeItem(key)
         return(JSON.parse(value));
-      // if(value !== null || value !== null) {
-      //   // value previously stored
-      // }
     } catch(e) {
       // error reading value
       console.log("error: ",e);
