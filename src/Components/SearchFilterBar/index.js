@@ -2,12 +2,13 @@ import React from 'react'
 import { View, TextInput, TouchableOpacity } from 'react-native'
 import styles from './styles'
 import Octicons from 'react-native-vector-icons/Octicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const SearchFilterBar = () => {
+const SearchFilterBar = ({text}) => {
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchInputContainer}>
-                <TextInput style={styles.searchInput} placeholder="Seacrh clients & phonebook" placeholderTextColor="#ccc" />
+                <TextInput style={styles.searchInput} placeholder={text} placeholderTextColor="#ccc" />
 
                 <View style={styles.searchBtn}>
                     <Octicons name="search" size={25} color="#33b9ff" />
@@ -15,7 +16,7 @@ const SearchFilterBar = () => {
             </View>
             <TouchableOpacity style={styles.filterContainer}>
                 <View>
-                    <Octicons name="settings" size={25} color="#33b9ff" />
+                    <FontAwesome name="filter" size={25} color="#33b9ff" />
                 </View>
             </TouchableOpacity>
         </View>

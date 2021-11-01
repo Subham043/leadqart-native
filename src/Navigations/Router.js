@@ -7,8 +7,7 @@ import RegisterScreen from '../Screens/Register/index'
 import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
-import FacebookScreen from '../Screens/Facebook/index'
-import ClientsScreen from '../Screens/Clients/index'
+import AddGroupScreen from '../Screens/AddGroup/index'
 import BottomTab from '../Navigations/BottomTab'
 
 const Stack = createNativeStackNavigator();
@@ -26,6 +25,15 @@ const Router = () => {
                     name="Home"
                     component={HomeScreen}
                     options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="AddGroup"
+                    component={AddGroupScreen}
+                    options={{
+                        title: 'Add Group', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
                 />
                 <Stack.Screen
                     name="Signin"

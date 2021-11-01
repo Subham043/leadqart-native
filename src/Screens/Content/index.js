@@ -1,19 +1,18 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, View } from 'react-native'
-import styles from './styles'
+import styles from './contentstyles'
 import SearchFilterBar from '../../Components/SearchFilterBar'
-import ClientTab from '../../Navigations/ClientTab'
+import ContentTab from '../../Navigations/ContentTab'
 
-const ClientsScreen = ({ navigation}) => {
-    
+const ContentScreen = () => {
     return (
         <SafeAreaView style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
-            <SearchFilterBar text="Seacrh clients & phonebook" />
-            <ClientTab navigation={navigation} />
+            <SearchFilterBar text="Search Content" />
+            <ContentTab />
         </SafeAreaView>
     )
 }
 
-export default ClientsScreen
+export default ContentScreen

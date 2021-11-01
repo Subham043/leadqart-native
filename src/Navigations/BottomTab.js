@@ -1,6 +1,8 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ClientsScreen from '../Screens/Clients/index'
+import ContentScreen from '../Screens/Content/index'
+import FollowUpScreen from '../Screens/FollowUp/index'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -46,7 +48,7 @@ const BottomTab = () => {
             />
             <Tab.Screen
                 name="Content"
-                component={ClientsScreen}
+                component={ContentScreen}
                 options={{
                     title: 'Content', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                         alignItems: 'center',
@@ -55,7 +57,7 @@ const BottomTab = () => {
             />
             <Tab.Screen
                 name="FollowUp"
-                component={ClientsScreen}
+                component={FollowUpScreen}
                 options={{
                     title: 'Follow Ups', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                         alignItems: 'center',

@@ -1,11 +1,9 @@
 import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import { ScrollView } from 'react-native'
 import styles from './styles'
 import AllCLientCard from '../../Components/AllCLientCard'
 
-const AllClientsScreen = () => {
+const AllClientsScreen = ({ navigation}) => {
     return (
         <ScrollView style={styles.ScrollContainer}>
             <AllCLientCard />

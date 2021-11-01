@@ -1,10 +1,15 @@
 import React from 'react'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useWindowDimensions, Text } from 'react-native';
-import FacebookScreen from '../Screens/Facebook/index'
-import AllClientsScreen from '../Screens/AllClients/index'
-import GroupsScreen from '../Screens/Groups/index'
+import FilesScreen from '../Screens/Files/index'
+import MessagesScreen from '../Screens/Messages/index'
+import PagesScreen from '../Screens/Pages/index'
 
+const renderScene = SceneMap({
+  Messages: MessagesScreen,
+  Files: FilesScreen,
+  Pages: PagesScreen,
+});
 
 const renderTabBar = props => (
     <TabBar
@@ -19,30 +24,18 @@ const renderTabBar = props => (
     />
   );
 
-const ClientTab = ({navigation}) => {
-  
+const ContentTab = () => {
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: 'first', title: 'All Clients' },
-        { key: 'second', title: 'Team' },
-        { key: 'third', title: 'Group' },
+        { key: 'Messages', title: 'Messages' },
+        { key: 'Files', title: 'Files' },
+        { key: 'Pages', title: 'Pages' },
     ]);
     return (
         <TabView
-            
             navigationState={{ index, routes }}
-            renderScene= {({ route }) => {
-              switch (route.key) {
-              case 'first':
-              return <AllClientsScreen navigation={navigation} />;
-              case 'second':
-              return <FacebookScreen navigation={navigation} />;
-              case 'third':
-              return <GroupsScreen navigation={navigation} />;
-              default:
-              return null;
-              }}}
+            renderScene={renderScene}
             renderTabBar={renderTabBar}
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}
@@ -50,4 +43,4 @@ const ClientTab = ({navigation}) => {
     )
 }
 
-export default ClientTab
+export default ContentTab
