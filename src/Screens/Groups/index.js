@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, View, RefreshControl } from 'react-native'
 import GroupCard from '../../Components/GroupCard';
 import GroupModal from '../../Components/GroupModal';
 import styles from './styles'
@@ -12,6 +12,19 @@ const GroupsScreen = ({navigation}) => {
 
     const dispatch = useDispatch();
     const loaderModal = useSelector(selectGroupModal)
+
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const wait = timeout => {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    };
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
+
     const actions = [
         {
           text: "Add Group",
@@ -25,7 +38,7 @@ const GroupsScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
 
-        <ScrollView style={styles.ScrollContainer}>
+        <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <GroupCard name="NEW LEADS" number="222" color="#33b9ff" />
             <GroupCard name="AS - Interested/Oppurtunities" number="25" color="#A59903" />
             <GroupCard name="Dead Leads" number="17" color="red" />

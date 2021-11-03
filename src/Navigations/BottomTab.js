@@ -40,20 +40,12 @@ const BottomTab = () => {
             <Tab.Screen
                 name="Clients"
                 component={ClientsScreen}
-                options={{
-                    title: 'Clients', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                        alignItems: 'center',
-                    }, headerTitleAlign: 'center'
-                }}
+                options={{ headerShown: false }}
             />
             <Tab.Screen
                 name="Content"
                 component={ContentScreen}
-                options={{
-                    title: 'Content', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                        alignItems: 'center',
-                    }, headerTitleAlign: 'center'
-                }}
+                options={{ headerShown: false }}
             />
             <Tab.Screen
                 name="FollowUp"

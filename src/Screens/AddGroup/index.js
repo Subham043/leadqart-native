@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import { Text, TouchableOpacity, View, TextInput, } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ColorPalette from '../../Components/ColorPicker'
 import styles from './styles'

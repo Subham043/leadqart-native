@@ -4,9 +4,9 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import styles from './styles'
 
-const AllClientCard = () => {
+const AllClientCard = ({ navigation }) => {
     return (
-            <TouchableOpacity style={styles.cardContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('FacebookLeadDetail')} style={styles.cardContainer}>
                 <View style={styles.topContainer}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatarOuter}>

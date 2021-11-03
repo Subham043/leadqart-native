@@ -24,7 +24,7 @@ const renderTabBar = props => (
     />
   );
 
-const ContentTab = () => {
+const ContentTab = ({ navigation }) => {
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
@@ -35,10 +35,21 @@ const ContentTab = () => {
     return (
         <TabView
             navigationState={{ index, routes }}
-            renderScene={renderScene}
+            renderScene={({ route }) => {
+              switch (route.key) {
+              case 'Messages':
+              return <MessagesScreen navigation={navigation} />;
+              case 'Files':
+              return <FilesScreen navigation={navigation} />;
+              case 'Pages':
+              return <PagesScreen navigation={navigation} />;
+              default:
+              return null;
+              }}}
             renderTabBar={renderTabBar}
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}
+            swipeEnabled={false}
         />
     )
 }

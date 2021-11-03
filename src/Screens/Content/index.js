@@ -1,16 +1,17 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, View } from 'react-native'
+import { SafeAreaView } from 'react-native'
+import { StatusBar as SBar  } from 'react-native'
 import styles from './contentstyles'
 import SearchFilterBar from '../../Components/SearchFilterBar'
 import ContentTab from '../../Navigations/ContentTab'
 
-const ContentScreen = () => {
+const ContentScreen = ({ navigation }) => {
     return (
-        <SafeAreaView style={styles.mainContainer}>
+        <SafeAreaView style={{...styles.mainContainer,paddingTop: SBar.currentHeight}}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
             <SearchFilterBar text="Search Content" />
-            <ContentTab />
+            <ContentTab navigation={navigation} />
         </SafeAreaView>
     )
 }

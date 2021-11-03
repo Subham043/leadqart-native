@@ -8,6 +8,10 @@ import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
 import AddGroupScreen from '../Screens/AddGroup/index'
+import AddMessageScreen from '../Screens/AddMessage/index'
+import AddFileScreen from '../Screens/AddFile/index'
+import AddPageScreen from '../Screens/AddPage/index'
+import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import BottomTab from '../Navigations/BottomTab'
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +38,38 @@ const Router = () => {
                             alignItems: 'center',
                         }, headerTitleAlign: 'center'
                     }}
+                />
+                <Stack.Screen
+                    name="AddMessage"
+                    component={AddMessageScreen}
+                    options={{
+                        title: 'Add Message', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
+                />
+                <Stack.Screen
+                    name="AddFile"
+                    component={AddFileScreen}
+                    options={{
+                        title: 'Add File', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
+                />
+                <Stack.Screen
+                    name="AddPage"
+                    component={AddPageScreen}
+                    options={{
+                        title: 'Add Page', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                            alignItems: 'center',
+                        }, headerTitleAlign: 'center'
+                    }}
+                />
+                <Stack.Screen
+                    name="FacebookLeadDetail"
+                    component={FacebookLeadDetailScreen}
+                    options={{ headerShown: false }}
                 />
                 <Stack.Screen
                     name="Signin"
