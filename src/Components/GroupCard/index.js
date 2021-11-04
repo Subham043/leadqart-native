@@ -3,14 +3,16 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const GroupCard = ({name,number,color}) => {
+const GroupCard = ({name,number,color,navigation}) => {
 
     const getInitials = (value) => {
         return value.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase();
     }
     
     return (
-            <TouchableOpacity style={styles.groupMainContainer}>
+            <TouchableOpacity style={styles.groupMainContainer} onPress={()=>navigation.navigate('GroupsList', {
+                groupName: name,
+              })}>
                 <View style={styles.leftMainContainer}>
                     <View style={styles.avatarMainContainer}>
                         <View style={{...styles.avatarIcon,backgroundColor:`${color}`}}>

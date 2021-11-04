@@ -12,6 +12,7 @@ import AddMessageScreen from '../Screens/AddMessage/index'
 import AddFileScreen from '../Screens/AddFile/index'
 import AddPageScreen from '../Screens/AddPage/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
+import GroupsListScreen from '../Screens/GroupsList/index'
 import BottomTab from '../Navigations/BottomTab'
 
 const Stack = createNativeStackNavigator();
@@ -69,6 +70,11 @@ const Router = () => {
                 <Stack.Screen
                     name="FacebookLeadDetail"
                     component={FacebookLeadDetailScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="GroupsList"
+                    component={GroupsListScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

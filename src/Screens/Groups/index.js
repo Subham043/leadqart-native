@@ -62,7 +62,7 @@ const GroupsScreen = ({navigation}) => {
         <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             {loading ? <GroupCardPlaceholder /> : null}
             {array.map((item, index) => {
-                return (<GroupCard name={item.name} number={item.number} color={item.color} key={index} />);
+                return (<GroupCard name={item.name} number={item.number} color={item.color} key={index} navigation={navigation} />);
             })}
         </ScrollView>
 
