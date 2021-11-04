@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     },
     searchInput:{
         width:'85%',
-        height:'100%',
+        color: 'gray'
     },
     searchBtn:{
         width:'15%',

@@ -20,18 +20,6 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
 
-    topContainerShadow: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 1,
-            height: 1,
-        },
-        shadowOpacity: 0.12,
-        shadowRadius: 2.22,
-
-        elevation: 1,
-    },
-
     backButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
@@ -259,7 +247,44 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 20,
-    }
+    },
+
+    optionsMainContainer:{
+        width:'100%',
+        height:'100%',
+    },
+
+    optionsHeaderContainer:{
+        width:'100%',
+        height:40,
+        paddingHorizontal:10,
+        paddingVertical:5,
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+    },
+
+    optionsHeaderText:{
+        fontSize:15
+    },
+
+    optionsContainer:{
+        width:'100%',
+        height:60,
+        backgroundColor:'white',
+        marginBottom:2,
+        paddingHorizontal:10,
+        paddingVertical:5,
+        flexDirection:'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    },
+
+    optionsText:{
+        color:'#33b9ff',
+        fontWeight:'bold',
+        marginLeft:15,
+        fontSize:15
+    },
 
 })
 

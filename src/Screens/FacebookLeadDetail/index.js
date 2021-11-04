@@ -1,29 +1,45 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Pressable } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { StatusBar as SBar } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LeadSocialButton from '../../Components/LeadSocialButton';
+import BottomMaskPopUp from '../../Components/BottomMaskPopUp';
 
 const FacebookLeadDetailScreen = ({ navigation }) => {
+
+    const refRBSheet = useRef();
+    const [showNavbarText, setShowNavbarText] = useState(false)
+
+    const handleScroll = (event) => {
+        event.nativeEvent.contentOffset.y > 56 ? setShowNavbarText(true) : setShowNavbarText(false)
+    }
+
+
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
             <View style={styles.layerContainer}>
-                <View style={{ ...styles.topContainer, ...styles.topContainerShadow }}>
-                    <TouchableOpacity onPress={()=>navigation.goBack()} style={styles.backButtonContainer}>
-                        <MaterialIcons name="arrow-back" size={25} color="black" />
-                        {/* <MaterialIcons name="arrow-back-ios" size={25} color="black" />
-                        <Text style={styles.backButtonText}>Michael Botsium</Text> */}
+                <View style={styles.topContainer}>
+                    {showNavbarText ? 
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
+                        
+                        <MaterialIcons name="arrow-back-ios" size={25} color="black" />
+                        <Text style={styles.backButtonText}>Michael Botsium</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    :
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
+                        <MaterialIcons name="arrow-back" size={25} color="black" />
+                    </TouchableOpacity> }
+                    <TouchableOpacity onPress={() => refRBSheet.current.open()} >
                         <Text style={styles.backButtonText}>Options</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.middleContainer}>
-                    <ScrollView>
+                    <ScrollView onScroll={handleScroll}>
                         <View style={styles.HeadingTextContainer}>
                             <Text style={styles.HeadingText}>Michael Botsium</Text>
                         </View>
@@ -127,6 +143,26 @@ const FacebookLeadDetailScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <BottomMaskPopUp refRBSheet={refRBSheet} height={260}>
+                <View styles={styles.optionsMainContainer}>
+                    <View style={styles.optionsHeaderContainer}>
+                        <Text style={styles.optionsHeaderText}>Options</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                        <MaterialIcons name="group-add" size={20} color="#33b9ff" />
+                        <Text style={styles.optionsText}>Add to Groups</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                        <FontAwesome5 name="user-check" size={18} color="#33b9ff" />
+                        <Text style={styles.optionsText}>Mark as New Lead</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                        <MaterialIcons name="delete" size={20} color="#33b9ff" />
+                        <Text style={styles.optionsText}>Delete Lead</Text>
+                    </TouchableOpacity>
+                </View>
+            </BottomMaskPopUp>
+
         </SafeAreaView>
     )
 }
