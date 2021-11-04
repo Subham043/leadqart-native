@@ -1,6 +1,7 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ClientsScreen from '../Screens/Clients/index'
+import AccountScreen from '../Screens/Account/index'
 import ContentScreen from '../Screens/Content/index'
 import FollowUpScreen from '../Screens/FollowUp/index'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -58,7 +59,7 @@ const BottomTab = () => {
             />
             <Tab.Screen
                 name="Account"
-                component={ClientsScreen}
+                component={AccountScreen}
                 options={{
                     title: 'Account', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                         alignItems: 'center',
