@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollView, View, RefreshControl } from 'react-native'
 import GroupCard from '../../Components/GroupCard';
 import GroupModal from '../../Components/GroupModal';
@@ -7,6 +7,7 @@ import { FloatingAction } from "react-native-floating-action";
 import { useDispatch, useSelector } from "react-redux"
 import { setGroupModal, selectGroupModal } from "../../../app/feature/groupModalSlice"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import GroupCardPlaceholder from '../../Components/GroupCardPlaceholder'
 
 const GroupsScreen = ({navigation}) => {
 
@@ -14,6 +15,8 @@ const GroupsScreen = ({navigation}) => {
     const loaderModal = useSelector(selectGroupModal)
 
     const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoadng] = React.useState(true);
+    const [array, setArray] = React.useState([]);
 
     const wait = timeout => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -21,8 +24,26 @@ const GroupsScreen = ({navigation}) => {
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        wait(2000).then(() => setRefreshing(false));
+        setArray([]);
+        setLoadng(true)
+        wait(2000).then(() => { setRefreshing(false); pageLoader() });
     }, []);
+
+    useEffect(() => {
+        pageLoader();
+    }, [])
+
+    const pageLoader = () => {
+        wait(2000).then(() => {
+            setLoadng(false)
+            setArray([
+                {name:"NEW LEADS", number:"222", color:"#33b9ff"},
+                {name:"AS - Interested/Oppurtunities", number:"25", color:"#A59903"},
+                {name:"Dead Leads", number:"17", color:"red"},
+                {name:"VG - Deals", number:"222", color:"green"},
+            ]);
+        });
+    }
 
 
     const actions = [
@@ -39,10 +60,10 @@ const GroupsScreen = ({navigation}) => {
         <View style={styles.container}>
 
         <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            <GroupCard name="NEW LEADS" number="222" color="#33b9ff" />
-            <GroupCard name="AS - Interested/Oppurtunities" number="25" color="#A59903" />
-            <GroupCard name="Dead Leads" number="17" color="red" />
-            <GroupCard name="VG - Deals" number="222" color="green" />
+            {loading ? <GroupCardPlaceholder /> : null}
+            {array.map((item, index) => {
+                return (<GroupCard name={item.name} number={item.number} color={item.color} key={index} />);
+            })}
         </ScrollView>
 
             <FloatingAction

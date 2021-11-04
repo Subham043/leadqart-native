@@ -4,7 +4,7 @@ import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const FileCard = ({ name, description }) => {
+const FileCard = ({ name }) => {
 
 
     return (
@@ -15,7 +15,6 @@ const FileCard = ({ name, description }) => {
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={styles.title}>{name}</Text>
-                    <Text style={styles.description} numberOfLines={2}>{description}</Text>
                 </View>
             </View>
             <View style={styles.rightMainContainer}>

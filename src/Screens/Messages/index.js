@@ -1,18 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollView, View, RefreshControl } from 'react-native'
 import MessageCard from '../../Components/MessageCard';
-import GroupModal from '../../Components/GroupModal';
 import styles from './styles'
 import { FloatingAction } from "react-native-floating-action";
-import { useDispatch, useSelector } from "react-redux"
-import { setGroupModal, selectGroupModal } from "../../../app/feature/groupModalSlice"
+import MessageCardPlaceholder from '../../Components/MessageCardPlaceholder'
 
 const MessageScreen = ({ navigation }) => {
 
-    const dispatch = useDispatch();
-    const loaderModal = useSelector(selectGroupModal)
-
     const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoadng] = React.useState(true);
+    const [array, setArray] = React.useState([]);
 
     const wait = timeout => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -20,8 +17,26 @@ const MessageScreen = ({ navigation }) => {
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        wait(2000).then(() => setRefreshing(false));
+        setArray([]);
+        setLoadng(true)
+        wait(2000).then(() => { setRefreshing(false); pageLoader() });
     }, []);
+
+    useEffect(() => {
+        pageLoader();
+    }, [])
+
+    const pageLoader = () => {
+        wait(2000).then(() => {
+            setLoadng(false)
+            setArray([
+                {name:"Cjn Properties", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"},
+                {name:"Follow Up - Vaibhav", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"},
+                {name:"Provident Park Square", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"},
+                {name:"Welcome Message", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"},
+            ]);
+        });
+    }
 
     const actions = [
         {
@@ -37,10 +52,10 @@ const MessageScreen = ({ navigation }) => {
         <View style={styles.container}>
 
         <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
-            <MessageCard name="Cjn Properties" description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries" />
-            <MessageCard name="Follow Up - Vaibhav" description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries" />
-            <MessageCard name="Provident Park Square" description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries" />
-            <MessageCard name="Welcome Message" description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries" />
+            {loading ? <MessageCardPlaceholder /> : null}
+            {array.map((item, index) => {
+                return (<MessageCard name={item.name} description={item.description} key={index} />);
+            })}
         </ScrollView>
 
             <FloatingAction
@@ -51,7 +66,6 @@ const MessageScreen = ({ navigation }) => {
                 color="#ffa200"
             />
 
-            <GroupModal />
         </View>
     )
 }

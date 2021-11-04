@@ -42,10 +42,6 @@ const styles = StyleSheet.create({
         marginBottom:5
     },
 
-    description:{
-        color:'gray'
-    },
-
     rightMainContainer:{
         width:'10%',
         height:'100%',
