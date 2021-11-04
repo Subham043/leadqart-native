@@ -13,6 +13,8 @@ import AddFileScreen from '../Screens/AddFile/index'
 import AddPageScreen from '../Screens/AddPage/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
+import FollowUpListScreen from '../Screens/FollowUpList/index'
+import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import BottomTab from '../Navigations/BottomTab'
 
 const Stack = createNativeStackNavigator();
@@ -75,6 +77,16 @@ const Router = () => {
                 <Stack.Screen
                     name="GroupsList"
                     component={GroupsListScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="FollowUpList"
+                    component={FollowUpListScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="LeadSearchList"
+                    component={LeadSearchListScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

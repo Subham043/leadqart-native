@@ -11,7 +11,7 @@ const ClientsScreen = ({ navigation}) => {
     return (
         <SafeAreaView style={{...styles.mainContainer,paddingTop: SBar.currentHeight}}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
-            <SearchFilterBar text="Seacrh clients & phonebook" />
+            <SearchFilterBar text="Seacrh clients & phonebook" navigation={navigation} />
             <ClientTab navigation={navigation} />
         </SafeAreaView>
     )

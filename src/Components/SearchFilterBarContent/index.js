@@ -4,18 +4,16 @@ import styles from './styles'
 import Octicons from 'react-native-vector-icons/Octicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const SearchFilterBar = ({text, navigation}) => {
+const SearchFilterBarContent = ({text, navigation}) => {
     return (
         <View style={styles.searchContainer}>
-            <TouchableOpacity onPress={() =>navigation.navigate('LeadSearchList',{
-                searchText:text
-            })} style={styles.searchInputContainer}>
-                <Text style={styles.searchInput}>{text}</Text>
+            <View style={styles.searchInputContainer}>
+                <TextInput style={styles.searchInput} placeholder={text} placeholderTextColor="gray" />
 
                 <View style={styles.searchBtn}>
                     <Octicons name="search" size={25} color="#33b9ff" />
                 </View>
-            </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.filterContainer}>
                 <View>
                     <FontAwesome name="filter" size={25} color="#33b9ff" />
@@ -25,4 +23,4 @@ const SearchFilterBar = ({text, navigation}) => {
     )
 }
 
-export default SearchFilterBar
+export default SearchFilterBarContent
