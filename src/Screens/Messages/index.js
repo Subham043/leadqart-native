@@ -54,7 +54,7 @@ const MessageScreen = ({ navigation }) => {
         <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
             {loading ? <MessageCardPlaceholder /> : null}
             {array.map((item, index) => {
-                return (<MessageCard name={item.name} description={item.description} key={index} />);
+                return (<MessageCard name={item.name} description={item.description} key={index} navigation={navigation} />);
             })}
         </ScrollView>
 

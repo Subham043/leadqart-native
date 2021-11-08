@@ -35,11 +35,11 @@ const ClientTab = ({navigation}) => {
             renderScene= {({ route }) => {
               switch (route.key) {
               case 'first':
-              return <AllClientsScreen navigation={navigation} />;
+              return <AllClientsScreen navigation={navigation} tabIndexNumber={index} />;
               case 'second':
-              return <FacebookScreen navigation={navigation} />;
+              return <FacebookScreen navigation={navigation} tabIndexNumber={index} />;
               case 'third':
-              return <GroupsScreen navigation={navigation} />;
+              return <GroupsScreen navigation={navigation} tabIndexNumber={index} />;
               default:
               return null;
               }}}

@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
         minHeight:100,
         backgroundColor:'transparent',
         position:'absolute',
-        top:-5,
+        top:115,
         zIndex:100000,
         alignItems: 'center',
         justifyContent: 'center',

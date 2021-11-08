@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const MessageCard = ({name,description}) => {
+const MessageCard = ({name,description, navigation}) => {
 
     
     return (
-            <TouchableOpacity style={styles.messageMainContainer}>
+            <TouchableOpacity onPress={()=>navigation.navigate('ViewMessage',{
+                name,description
+            })} style={styles.messageMainContainer}>
                 <View style={styles.leftMainContainer}>
                     <Text style={styles.title}>{name}</Text>
                     <Text style={styles.description} numberOfLines={2}>{description}</Text>

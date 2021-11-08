@@ -5,32 +5,16 @@ import { View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpa
 import styles from './styles'
 import axios from "../../../axios"
 import Loader from '../../Components/Loader'
-import Toaster from '../../Components/Toaster'
 import ErrorToaster from '../../Components/ErrorToaster'
+import { useDispatch, useSelector } from "react-redux"
+import { login, logout, selectUser } from "../../../app/feature/userSlice"
+import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../../app/feature/refreshTokenSlice"
 
 const LoginScreen = ({ navigation }) => {
 
-    useEffect(() => {
-        getDataAsync('accessToken').then((res) => {})
-    }, [getDataAsync])
-
-      const getDataAsync = async (key) => {
-        try {
-            const value = await AsyncStorage.getItem(key)
-            // await AsyncStorage.removeItem(key)
-          if(value !== null) {
-            // value previously stored
-            return(JSON.parse(value));
-          }
-        } catch(e) {
-          // error reading value
-          console.log(e);
-        }
-      }
+    const dispatch = useDispatch();
 
     const [showLoader, setShowLoader] = useState(false)
-    const [showToaster, setShowToaster] = useState(false)
-    const [showToasterMsg, setShowToasterMsg] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState("")
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
 
@@ -101,17 +85,11 @@ const LoginScreen = ({ navigation }) => {
                 const response = await axios.post('/login', { email, password },);
                 setShowLoader(false)
                 if(response?.data?.message){
-                    setShowToasterMsg(response?.data?.message)
-                    setShowToaster(true)
-                    setTimeout(() => {
-                        setShowToaster(false)
-                    }, 1000);
                     storeDataAsync("accessToken",response?.data.accessToken);
                     storeDataAsync("refreshToken",response?.data.refreshToken);
-                    // navigation.navigate('OTP', {
-                    //     id: response.data.id,
-                    //     msg: response.data.message,
-                    //   });
+                    dispatch(setRefreshToken(response?.data.refreshToken));
+                    dispatch(login(response?.data.accessToken));
+                    // navigation.navigate('Main');
                 }
 
                 if(response?.data?.rateLimit){
@@ -189,7 +167,6 @@ const LoginScreen = ({ navigation }) => {
                 <ImageBackground source={require('../../../assets/images/blue-waves.png')} style={styles.backgroundImage2} />
             </ScrollView>
             <Loader status={showLoader} />
-            <Toaster message={showToasterMsg} status={showToaster} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
         </View>
     )

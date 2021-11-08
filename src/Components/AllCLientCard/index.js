@@ -4,28 +4,34 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import styles from './styles'
 
-const AllClientCard = ({ navigation }) => {
+const AllClientCard = ({ navigation, item }) => {
+
+    const getInitials = (value) => {
+        return value.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase();
+    }
+
     return (
             <TouchableOpacity onPress={() => navigation.navigate('FacebookLeadDetail')} style={styles.cardContainer}>
                 <View style={styles.topContainer}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatarOuter}>
-                            <Text style={styles.avatarText}>MT</Text>
+                            <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
                         </View>
                     </View>
                     <View style={styles.infoContainer}>
                         <View style={styles.titleContainer}>
-                            <Text style={styles.titleText}>Michael Thomas</Text>
-                            <SimpleLineIcons name="badge" size={30} color="#ffa200" />
+                            <Text style={styles.titleText}>{item.name}</Text>
+                            {item.newLead===1 ?
+                            <SimpleLineIcons name="badge" size={30} color="#ffa200" /> : null }
                         </View>
-                        <Text style={styles.description} numberOfLines={2}>Instagram Lead via PropsBee, Campaign: DRS Campaign-Leads, Ad-set</Text>
+                        <Text style={styles.description} numberOfLines={2}>Facebook Lead via {(item.facebookPage).length!=0?item.facebookPage:item.leadSource}, Campaign: {(item.adset).length!=0?item.adset:item.ad}, Ad-set</Text>
                     </View>
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.leftContainer}>
                         <View style={styles.bottomTextContainer}>
                             <EvilIcons name="sc-facebook" size={20} color="#fff" />
-                            <Text style={styles.bottomText}>PropsBee</Text>
+                            <Text style={styles.bottomText}>{(item.facebookPage).length!=0?item.facebookPage:item.leadSource}</Text>
                         </View>
                     </View>
                     <View style={styles.rightContainer}>

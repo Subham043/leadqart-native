@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const GroupCard = ({name,number,color,navigation}) => {
+const GroupCard = ({name,number,color,navigation,id}) => {
 
     const getInitials = (value) => {
         return value.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase();
@@ -12,6 +12,7 @@ const GroupCard = ({name,number,color,navigation}) => {
     return (
             <TouchableOpacity style={styles.groupMainContainer} onPress={()=>navigation.navigate('GroupsList', {
                 groupName: name,
+                groupId:id
               })}>
                 <View style={styles.leftMainContainer}>
                     <View style={styles.avatarMainContainer}>
