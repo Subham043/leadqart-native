@@ -39,6 +39,7 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
             setGroupData([])
             getGroups();
             dispatch(setReload(false));
+            return;
         }
         setLoadng(true)
         setGroupData([])

@@ -33,12 +33,12 @@ const Router = () => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
-    const rToken = useSelector(selectRefreshToken)
+    // const rToken = useSelector(selectRefreshToken)
 
     useEffect(async () => {
         // await AsyncStorage.removeItem('accessToken')
         // await AsyncStorage.removeItem('refreshToken')
-        accessToken = await getDataAsync('accessToken')
+        // accessToken = await getDataAsync('accessToken')
         refreshToken = await getDataAsync('refreshToken')
         if (refreshToken !== null) {
             const response = await axios.get('/refresh-token', {
@@ -47,7 +47,7 @@ const Router = () => {
                 },
             });
             if (response?.data?.message) {
-                storeDataAsync("accessToken", response?.data.accessToken);
+                // storeDataAsync("accessToken", response?.data.accessToken);
                 storeDataAsync("refreshToken", response?.data.refreshToken);
                 dispatch(login(response?.data.accessToken));
                 dispatch(setRefreshToken(response?.data.refreshToken));
@@ -55,7 +55,7 @@ const Router = () => {
 
             if (response?.data?.error) {
                 // console.log(response?.data?.error);
-                await AsyncStorage.removeItem('accessToken')
+                // await AsyncStorage.removeItem('accessToken')
                 await AsyncStorage.removeItem('refreshToken')
                 dispatch(logout());
                 dispatch(removeRefreshToken());
@@ -63,7 +63,7 @@ const Router = () => {
 
             }
         } else {
-            await AsyncStorage.removeItem('accessToken')
+            // await AsyncStorage.removeItem('accessToken')
             await AsyncStorage.removeItem('refreshToken')
             dispatch(logout());
             dispatch(removeRefreshToken());

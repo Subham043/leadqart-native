@@ -71,10 +71,32 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
     }
 
     const getTokens = async () => {
+        refreshToken = await getDataAsync('refreshToken')
         if (rToken !== null || rToken !== undefined) {
             const response = await axios.get('/refresh-token', {
                 headers: {
                     'refreshtoken': rToken,
+                },
+            });
+            if (response?.data?.message) {
+                storeDataAsync("accessToken", response?.data.accessToken);
+                storeDataAsync("refreshToken", response?.data.refreshToken);
+                dispatch(login(response?.data.accessToken));
+                dispatch(setRefreshToken(response?.data.refreshToken));
+            }
+
+            if (response?.data?.error) {
+                // console.log(response?.data?.error);
+                await AsyncStorage.removeItem('accessToken')
+                await AsyncStorage.removeItem('refreshToken')
+                dispatch(logout());
+                dispatch(removeRefreshToken());
+                return;
+            }
+        } else if(refreshToken !== null || refreshToken !== undefined){
+            const response = await axios.get('/refresh-token', {
+                headers: {
+                    'refreshtoken': refreshToken,
                 },
             });
             if (response?.data?.message) {
@@ -108,6 +130,17 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
         } catch (e) {
             // saving error
             console.log(e);
+        }
+    }
+
+    const getDataAsync = async (key) => {
+        try {
+            const value = await AsyncStorage.getItem(key)
+            // await AsyncStorage.removeItem(key)
+            return (JSON.parse(value));
+        } catch (e) {
+            // error reading value
+            console.log("error: ", e);
         }
     }
 

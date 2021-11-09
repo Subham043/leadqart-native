@@ -38,11 +38,11 @@ const ContentTab = ({ navigation }) => {
             renderScene={({ route }) => {
               switch (route.key) {
               case 'Messages':
-              return <MessagesScreen navigation={navigation} />;
+              return <MessagesScreen navigation={navigation} tabIndexNumber={index} />;
               case 'Files':
-              return <FilesScreen navigation={navigation} />;
+              return <FilesScreen navigation={navigation} tabIndexNumber={index} />;
               case 'Pages':
-              return <PagesScreen navigation={navigation} />;
+              return <PagesScreen navigation={navigation} tabIndexNumber={index} />;
               default:
               return null;
               }}}

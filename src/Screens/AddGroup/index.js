@@ -37,7 +37,7 @@ const AddGroupScreen = ({ navigation }) => {
       return;
     } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
       setNameError(true)
-      setNameErrorValue('Please enter a valid password')
+      setNameErrorValue('Please enter a valid group name')
       return;
     } else {
       setNameError(false)
@@ -51,7 +51,7 @@ const AddGroupScreen = ({ navigation }) => {
 
     if (name == '') {
       setNameError(true)
-      setNameErrorValue('Please enter your email')
+      setNameErrorValue('Please enter group name')
       return;
     } else {
       setNameError(false)
