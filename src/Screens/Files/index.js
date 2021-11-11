@@ -5,19 +5,21 @@ import styles from './styles'
 import { FloatingAction } from "react-native-floating-action";
 import FileCardPlaceholder from '../../Components/FileCardPlaceholder'
 import { useDispatch, useSelector } from "react-redux"
-import { login, logout, selectUser } from "../../../app/feature/userSlice"
-import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import { logout, selectUser } from "../../../app/feature/userSlice"
+import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setReload, selectReload } from "../../../app/feature/reloadSlice"
+import { setSeacrhText, selectSearchText } from "../../../app/feature/searchTextSlice"
 
 const FilesScreen = ({ navigation, tabIndexNumber }) => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const searchText = useSelector(selectSearchText)
     const reload = useSelector(selectReload)
-    const rToken = useSelector(selectRefreshToken)
     const [fileData, setFileData] = React.useState([]);
+    const [searchData, setSearchData] = React.useState([]);
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
@@ -27,23 +29,32 @@ const FilesScreen = ({ navigation, tabIndexNumber }) => {
         setLoadng(true)
         setFileData([])
         getContentFile();
+        dispatch(setSeacrhText(""))
     }, []);
 
     useEffect(() => {
+        let mounted = true
         if (tabIndexNumber === 1 || reload) {
-            setLoadng(true)
-            setFileData([])
-            getContentFile();
-            dispatch(setReload(false));
-            return;
+            if (mounted) {
+                setLoadng(true)
+                setFileData([])
+                getContentFile();
+                dispatch(setReload(false));
+                dispatch(setSeacrhText(""))
+                return;
+            }
+        } else {
+            if (mounted) {
+                setLoadng(true)
+                setFileData([])
+                getContentFile();
+                dispatch(setSeacrhText(""))
+            }
         }
-        setLoadng(true)
-        setFileData([])
-        getContentFile();
+        return () => mounted = false;
     }, [tabIndexNumber, reload])
 
     const getContentFile = async () => {
-        getTokens();
         try {
             const resp = await axios.get('/content-file/view-all', {
                 headers: {
@@ -59,11 +70,10 @@ const FilesScreen = ({ navigation, tabIndexNumber }) => {
             if (resp?.data?.error) {
                 console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
-                    storeDataAsync("accessToken", response?.data.accessToken);
-                    storeDataAsync("refreshToken", response?.data.refreshToken);
-                    dispatch(login(response?.data.accessToken));
-                    dispatch(setRefreshToken(response?.data.refreshToken));
-                    navigation.navigate('Signin')
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
                     return;
                 }
             }
@@ -72,71 +82,46 @@ const FilesScreen = ({ navigation, tabIndexNumber }) => {
         } catch (e) { console.log(e) }
     }
 
-    const getTokens = async () => {
-        if (rToken !== null || rToken !== undefined) {
-            const response = await axios.get('/refresh-token', {
-                headers: {
-                    'refreshtoken': rToken,
-                },
-            });
-            if (response?.data?.message) {
-                storeDataAsync("accessToken", response?.data.accessToken);
-                storeDataAsync("refreshToken", response?.data.refreshToken);
-                dispatch(login(response?.data.accessToken));
-                dispatch(setRefreshToken(response?.data.refreshToken));
-            }
-
-            if (response?.data?.error) {
-                // console.log(response?.data?.error);
-                await AsyncStorage.removeItem('accessToken')
-                await AsyncStorage.removeItem('refreshToken')
-                dispatch(logout());
-                dispatch(removeRefreshToken());
-                return;
-            }
+    useEffect(() => {
+        if (searchText.length > 0) {
+            let searchArr = fileData.filter(item => {
+                return (item.name !=null ? item.name : "").toLowerCase().includes((searchText).toLowerCase());
+            })
+            setSearchData(searchArr)
         } else {
-            await AsyncStorage.removeItem('accessToken')
-            await AsyncStorage.removeItem('refreshToken')
-            dispatch(logout());
-            dispatch(removeRefreshToken());
-            return;
+            setSearchData([])
         }
-    }
-
-    const storeDataAsync = async (key, value) => {
-        try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem(key, jsonValue)
-        } catch (e) {
-            // saving error
-            console.log(e);
-        }
-    }
+    }, [searchText])
 
     const actions = [
         {
-          text: "Add File",
-          icon: require("../../../assets/images/file.png"),
-          name: "add_file",
-          position: 1,
-          color:"#33b9ff",
+            text: "Add File",
+            icon: require("../../../assets/images/file.png"),
+            name: "add_file",
+            position: 1,
+            color: "#33b9ff",
         },
-      ];
+    ];
 
     return (
         <View style={styles.container}>
 
-        <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
-            {loading ? <FileCardPlaceholder /> : null}
-            {fileData.map((item, index) => {
-                return (<FileCard name={item.name} key={index} />);
-            })}
-        </ScrollView>
+            <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
+                {loading ? <FileCardPlaceholder /> : null}
+                {searchText.length > 0 && tabIndexNumber === 1 ?
+                searchData.map((item, index) => {
+                    return (<FileCard name={item.name} key={index} />);
+                }):
+                fileData.map((item, index) => {
+                    return (<FileCard name={item.name} key={index} />);
+                })
+            }
+            </ScrollView>
 
             <FloatingAction
                 actions={actions}
                 onPressItem={name => {
-                    name==="add_file" ?  navigation.navigate('AddFile') : null;
+                    name === "add_file" ? navigation.navigate('AddFile') : null;
                 }}
                 color="#ffa200"
             />

@@ -279,6 +279,18 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
 
+    checkBoxContainer:{
+        width:'100%',
+        height:60,
+        backgroundColor:'white',
+        marginBottom:2,
+        paddingHorizontal:10,
+        paddingVertical:5,
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+
     optionsText:{
         color:'#33b9ff',
         fontWeight:'bold',
@@ -286,6 +298,94 @@ const styles = StyleSheet.create({
         fontSize:15
     },
 
+    checkBoxText:{
+        color:'#818181',
+        fontWeight:'bold',
+        fontSize:15
+    },
+
+    SocialButton: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffa200',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+
+        elevation: 6,
+    },
+
+    logOptionsMainContainer:{
+        width:'100%',
+        height:'100%',
+        justifyContent: 'space-evenly',
+    },
+
+    NoteOptionBackground:{
+        backgroundColor:'#fff',
+        width:'100%',
+        justifyContent: 'space-between',
+        height:350-68
+    },
+    groupOptionScrollBackground:{
+        width:'100%',
+        justifyContent: 'space-between',
+        height:550-68
+    },
+    textArea:{
+        width:'100%',
+        height:130,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        fontSize:17
+    },
+    logIconContainer:{
+        width:'100%',
+        paddingHorizontal:10,
+        paddingVertical:5,
+        alignItems: 'center',
+    },
+
+    logText:{
+        fontSize:20,
+        fontWeight:'bold',
+        textAlign: 'center',
+        marginTop:10
+    },
+    logBtnContainer:{
+        width:'100%',
+        paddingHorizontal:10,
+        paddingVertical:5,
+    },
+    LogApproveBtn:{
+        width:'100%',
+        paddingHorizontal:5,
+        paddingVertical:15,
+        backgroundColor:'#33b9ff',
+        alignItems:'center',
+        borderRadius:25,
+    },
+    LogDiscardBtn:{
+        width:'100%',
+        paddingHorizontal:5,
+        paddingVertical:15,
+        backgroundColor:'#85D5FF',
+        alignItems:'center',
+        marginTop:10,
+        borderRadius:25,
+    },
+
+    logBtnText:{
+        fontWeight: 'bold',
+        color:'#fff'
+    }
 })
 
 

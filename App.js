@@ -3,24 +3,23 @@ import React, { useEffect } from 'react';
 import Router from './src/Navigations/Router';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import axios from "./axios"
-// import { useDispatch, useSelector } from "react-redux"
-// import { login, logout, selectUser } from "./app/feature/userSlice"
-// import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "./app/feature/refreshTokenSlice"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "./axios"
+import { useDispatch, useSelector } from "react-redux"
+import { login, logout, selectUser } from "./app/feature/userSlice"
+import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "./app/feature/refreshTokenSlice"
 
 export default function App() {
 
   // const dispatch = useDispatch();
-  // const user = useSelector(selectUser)
-  // const rToken = useSelector(selectRefreshToken)
+  // // const user = useSelector(selectUser)
+  // // const rToken = useSelector(selectRefreshToken)
 
   // useEffect(async () => {
-  //   const accessToken = await getDataAsync('accessToken')
+  //   // const accessToken = await getDataAsync('accessToken')
   //   const refreshToken = await getDataAsync('refreshToken')
   //   // console.log("accessToken : ",accessToken)
   //   // console.log("refreshToken : ",refreshToken)
-  //   if (accessToken === null) {
   //     if (refreshToken !== null) {
   //       const response = await axios.get('/refresh-token', {
   //         headers: {
@@ -39,7 +38,6 @@ export default function App() {
   //         // console.log(response?.data?.error);
   //       }
   //     }
-  //   }
   // }, [getDataAsync, storeDataAsync])
 
   // const getDataAsync = async (key) => {

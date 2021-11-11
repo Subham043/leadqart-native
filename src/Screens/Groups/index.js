@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { ScrollView, View, RefreshControl } from 'react-native'
 import GroupCard from '../../Components/GroupCard';
-import GroupModal from '../../Components/GroupModal';
 import styles from './styles'
 import { FloatingAction } from "react-native-floating-action";
 import { useDispatch, useSelector } from "react-redux"
-import { setGroupModal, selectGroupModal } from "../../../app/feature/groupModalSlice"
 import GroupCardPlaceholder from '../../Components/GroupCardPlaceholder'
-import { login, logout, selectUser } from "../../../app/feature/userSlice"
-import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import { logout, selectUser } from "../../../app/feature/userSlice"
+import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setReload, selectReload } from "../../../app/feature/reloadSlice"
@@ -16,10 +14,8 @@ import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 const GroupsScreen = ({ navigation, tabIndexNumber }) => {
 
     const dispatch = useDispatch();
-    const loaderModal = useSelector(selectGroupModal)
     const user = useSelector(selectUser)
     const reload = useSelector(selectReload)
-    const rToken = useSelector(selectRefreshToken)
     const [groupData, setGroupData] = React.useState([]);
 
     const [refreshing, setRefreshing] = React.useState(false);
@@ -33,21 +29,26 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
     }, []);
 
     useEffect(() => {
-
+        let mounted = true
         if (tabIndexNumber === 2 || reload) {
-            setLoadng(true)
-            setGroupData([])
-            getGroups();
-            dispatch(setReload(false));
-            return;
+            if (mounted) {
+                setLoadng(true)
+                setGroupData([])
+                getGroups();
+                dispatch(setReload(false));
+                return;
+            }
+        } else {
+            if (mounted) {
+                setLoadng(true)
+                setGroupData([])
+                getGroups();
+            }
         }
-        setLoadng(true)
-        setGroupData([])
-        getGroups();
+        return () => mounted = false;
     }, [tabIndexNumber, reload])
 
     const getGroups = async () => {
-        getTokens();
         try {
             const resp = await axios.get('/groups/view-all', {
                 headers: {
@@ -63,12 +64,10 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
             if (resp?.data?.error) {
                 console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
-                    storeDataAsync("accessToken", response?.data.accessToken);
-                    storeDataAsync("refreshToken", response?.data.refreshToken);
-                    dispatch(login(response?.data.accessToken));
-                    dispatch(setRefreshToken(response?.data.refreshToken));
-                    navigation.navigate('Signin')
-                    return;
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
                 }
             }
 
@@ -76,46 +75,6 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
         } catch (e) { console.log(e) }
     }
 
-    const getTokens = async () => {
-        if (rToken !== null || rToken !== undefined) {
-            const response = await axios.get('/refresh-token', {
-                headers: {
-                    'refreshtoken': rToken,
-                },
-            });
-            if (response?.data?.message) {
-                storeDataAsync("accessToken", response?.data.accessToken);
-                storeDataAsync("refreshToken", response?.data.refreshToken);
-                dispatch(login(response?.data.accessToken));
-                dispatch(setRefreshToken(response?.data.refreshToken));
-            }
-
-            if (response?.data?.error) {
-                // console.log(response?.data?.error);
-                await AsyncStorage.removeItem('accessToken')
-                await AsyncStorage.removeItem('refreshToken')
-                dispatch(logout());
-                dispatch(removeRefreshToken());
-                return;
-            }
-        } else {
-            await AsyncStorage.removeItem('accessToken')
-            await AsyncStorage.removeItem('refreshToken')
-            dispatch(logout());
-            dispatch(removeRefreshToken());
-            return;
-        }
-    }
-
-    const storeDataAsync = async (key, value) => {
-        try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem(key, jsonValue)
-        } catch (e) {
-            // saving error
-            console.log(e);
-        }
-    }
 
 
 
@@ -147,8 +106,6 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
                 }}
                 color="#ffa200"
             />
-
-            <GroupModal />
         </View>
     )
 }

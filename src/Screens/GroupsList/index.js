@@ -10,14 +10,14 @@ import AllClientCardPlaceholder from '../../Components/AllClientCardPlaceholder'
 import BottomMaskPopUp from '../../Components/BottomMaskPopUp';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from "react-redux"
-import { login, logout, selectUser } from "../../../app/feature/userSlice"
-import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import { logout, selectUser } from "../../../app/feature/userSlice"
+import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
-import { setReload, selectReload } from "../../../app/feature/reloadSlice"
+import { setReload } from "../../../app/feature/reloadSlice"
 
 const GroupsListScreen = ({ route, navigation }) => {
 
@@ -25,7 +25,6 @@ const GroupsListScreen = ({ route, navigation }) => {
     const { groupName, groupId } = route.params;
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
-    const rToken = useSelector(selectRefreshToken)
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
@@ -45,15 +44,18 @@ const GroupsListScreen = ({ route, navigation }) => {
     }, []);
 
     useEffect(() => {
-        setLoadng(true)
-        setLeadData([])
-        getLeads();
-    }, [getLeads])
+        let mounted = true;
+        if (mounted) {
+            setLoadng(true)
+            setLeadData([])
+            getLeads();
+        }
+        return () => mounted = false;
+    }, [])
 
     const deleteGroup = async () => {
         refRBSheet.current.close()
         setShowLoader(true)
-        getTokens();
         try {
             const resp = await axios.delete(`/groups/delete/${groupId}`, {
                 headers: {
@@ -83,22 +85,21 @@ const GroupsListScreen = ({ route, navigation }) => {
             if (resp?.data?.error) {
                 console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
-                    storeDataAsync("accessToken", resp?.data.accessToken);
-                    storeDataAsync("refreshToken", resp?.data.refreshToken);
-                    dispatch(login(resp?.data.accessToken));
-                    dispatch(setRefreshToken(resp?.data.refreshToken));
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
                     return;
                 }
             }
 
 
-        } catch (e) { 
-            console.log(e) 
+        } catch (e) {
+            console.log(e)
         }
     }
 
     const getLeads = async () => {
-        getTokens();
         try {
             const resp = await axios.get(`/groups/view/${groupId}`, {
                 headers: {
@@ -115,57 +116,16 @@ const GroupsListScreen = ({ route, navigation }) => {
             if (resp?.data?.error) {
                 console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
-                    storeDataAsync("accessToken", resp?.data.accessToken);
-                    storeDataAsync("refreshToken", resp?.data.refreshToken);
-                    dispatch(login(resp?.data.accessToken));
-                    dispatch(setRefreshToken(resp?.data.refreshToken));
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
                     return;
                 }
             }
 
 
         } catch (e) { console.log(e) }
-    }
-
-    const getTokens = async () => {
-        if (rToken !== null || rToken !== undefined) {
-            const response = await axios.get('/refresh-token', {
-                headers: {
-                    'refreshtoken': rToken,
-                },
-            });
-            if (response?.data?.message) {
-                storeDataAsync("accessToken", response?.data.accessToken);
-                storeDataAsync("refreshToken", response?.data.refreshToken);
-                dispatch(login(response?.data.accessToken));
-                dispatch(setRefreshToken(response?.data.refreshToken));
-            }
-
-            if (response?.data?.error) {
-                // console.log(response?.data?.error);
-                await AsyncStorage.removeItem('accessToken')
-                await AsyncStorage.removeItem('refreshToken')
-                dispatch(logout());
-                dispatch(removeRefreshToken());
-                return;
-            }
-        } else {
-            await AsyncStorage.removeItem('accessToken')
-            await AsyncStorage.removeItem('refreshToken')
-            dispatch(logout());
-            dispatch(removeRefreshToken());
-            return;
-        }
-    }
-
-    const storeDataAsync = async (key, value) => {
-        try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem(key, jsonValue)
-        } catch (e) {
-            // saving error
-            console.log(e);
-        }
     }
 
     return (
@@ -215,7 +175,7 @@ const GroupsListScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </BottomMaskPopUp>
-            
+
         </SafeAreaView>
     )
 }

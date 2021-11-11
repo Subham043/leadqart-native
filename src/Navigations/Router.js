@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../Screens/Home/index'
@@ -16,6 +16,7 @@ import ViewMessageScreen from '../Screens/ViewMessage/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
+import LoadingScreen from '../Screens/Loading/index'
 import BottomTab from '../Navigations/BottomTab'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../../axios"
@@ -33,12 +34,12 @@ const Router = () => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
-    // const rToken = useSelector(selectRefreshToken)
+
+    const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
-        // await AsyncStorage.removeItem('accessToken')
-        // await AsyncStorage.removeItem('refreshToken')
-        // accessToken = await getDataAsync('accessToken')
+        let mounted = true;
+        setLoading(true)
         refreshToken = await getDataAsync('refreshToken')
         if (refreshToken !== null) {
             const response = await axios.get('/refresh-token', {
@@ -47,30 +48,34 @@ const Router = () => {
                 },
             });
             if (response?.data?.message) {
-                // storeDataAsync("accessToken", response?.data.accessToken);
+                if(mounted){
                 storeDataAsync("refreshToken", response?.data.refreshToken);
                 dispatch(login(response?.data.accessToken));
                 dispatch(setRefreshToken(response?.data.refreshToken));
+                }
             }
 
             if (response?.data?.error) {
                 // console.log(response?.data?.error);
-                // await AsyncStorage.removeItem('accessToken')
+                if(mounted){
                 await AsyncStorage.removeItem('refreshToken')
                 dispatch(logout());
                 dispatch(removeRefreshToken());
-                return;
+                }
 
             }
         } else {
-            // await AsyncStorage.removeItem('accessToken')
+            if(mounted){
             await AsyncStorage.removeItem('refreshToken')
             dispatch(logout());
             dispatch(removeRefreshToken());
-            return;
+            }
         }
-    // }, [getDataAsync, storeDataAsync])
-    }, [])
+
+        setLoading(false);
+
+        return () => mounted = false;
+    }, [refreshToken])
 
     const getDataAsync = async (key) => {
         try {
@@ -96,6 +101,7 @@ const Router = () => {
 
     return (
         <NavigationContainer>
+            {loading ? <LoadingScreen /> : 
             <Stack.Navigator>
                 {user !== null ?
                     <>
@@ -223,7 +229,7 @@ const Router = () => {
                     component={FacebookScreen}
                     options={{ headerShown: false }}
                 /> */}
-            </Stack.Navigator>
+            </Stack.Navigator>}
         </NavigationContainer>
     )
 }
