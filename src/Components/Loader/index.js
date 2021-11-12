@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
-import { Animated, ActivityIndicator, Dimensions } from 'react-native'
+import { Animated, ActivityIndicator, Dimensions,SafeAreaView, View } from 'react-native'
 import styles from './styles'
+import { StatusBar as SBar } from 'react-native'
 
 const Loader = (props) => {
 

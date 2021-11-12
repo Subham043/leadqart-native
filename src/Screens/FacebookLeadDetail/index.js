@@ -13,11 +13,14 @@ import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import axios from "../../../axios"
 import GroupSelectionPlaceholder from '../../Components/GroupSelectionPlaceholder'
+import Toaster from '../../Components/Toaster'
+import Loader from '../../Components/Loader'
+import ErrorToaster from '../../Components/ErrorToaster'
 
 const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
     const { leadId, leadItem } = route.params;
-
+    
     const refRBSheet = useRef();
     const refCallLog = useRef();
     const refNote = useRef();
@@ -31,10 +34,17 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const [noteText, setNoteText] = useState("")
     const [noteTextErrorValue, setNoteTextErrorValue] = useState("")
     const [noteTextError, setNoteTextError] = useState(false)
-    const [checkBox, setCheckBox] = useState(false)
     const [loading, setLoading] = useState(true)
     const [groupData, setGroupData] = React.useState([]);
+    const [leadGroupData, setLeadGroupData] = React.useState([]);
+    const [newLeadGroupData, setNewLeadGroupData] = React.useState([]);
+    const [leadDetail, setLeadDetail] = React.useState({});
 
+    const [showLoader, setShowLoader] = useState(false)
+    const [showErrorToaster, setShowErrorToaster] = useState(false)
+    const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
+    const [showToaster, setShowToaster] = useState(false)
+    const [showToasterMsg, setShowToasterMsg] = useState("")
 
     const handleScroll = (event) => {
         event.nativeEvent.contentOffset.y > 56 ? setShowNavbarText(true) : setShowNavbarText(false)
@@ -62,24 +72,89 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     }
 
     const noteTextHandler = (text) => {
+        setNoteTextError(false)
+        setNoteTextErrorValue('')
         setNoteText(text)
     }
 
+    useEffect(() => {
+        loadLeadData();
+    }, [leadId])
+
+    const loadLeadData = async () => {
+        setShowLoader(true)
+        try {
+            const resp = await axios.get(`/leads/view/${leadId}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            if (resp?.data?.message) {
+                console.log(resp?.data?.leads);
+                setLeadDetail(resp?.data?.leads)
+                setLeadGroupData(resp?.data?.leads.groups)
+                setNoteText(resp?.data?.leads.notes === null ? "" : resp?.data?.leads.notes)
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                    return;
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+        setShowLoader(false)
+    }
+
     const checkBoxHandler = (id) => {
-        
+
         let group = groupData.findIndex((obj => obj.id == id));
         groupData[group].isChecked = groupData[group].isChecked === undefined ? true : !groupData[group].isChecked
+        if (groupData[group].isChecked === true) {
+            let newLeadGroupObj = {}
+            let newLeadGroup = newLeadGroupData.findIndex((obj => obj.group_id == id));
+            if (newLeadGroup == -1) {
+                newLeadGroupObj['lead_id'] = (leadId).toString();
+                newLeadGroupObj['group_id'] = (id).toString();
+                setNewLeadGroupData([...newLeadGroupData, newLeadGroupObj]);
+            } else {
+                newLeadGroupData[newLeadGroup].lead_id = (leadId).toString();
+                newLeadGroupData[newLeadGroup].group_id = (id).toString();
+                setNewLeadGroupData([...newLeadGroupData]);
+            }
+
+        } else {
+            let newLeadGroup = newLeadGroupData.filter((obj => obj.group_id != id));
+            setNewLeadGroupData(newLeadGroup);
+        }
         setGroupData([...groupData]);
+
     }
-    
+
+
     useEffect(() => {
         let mounted = true
+
         if (mounted) {
-            setGroupData([])
-            getGroups();
+            setLeadDetail(leadItem)
+            setNoteText(leadItem.notes === null ? "" : leadItem.notes)
+            setLeadGroupData(leadItem.groups)
         }
         return () => mounted = false;
-    }, [])
+    }, [leadId])
+
+    const groupBtnHandler = () => {
+        setLeadGroupData(leadItem.groups)
+        setGroupData([])
+        getGroups();
+        refGroup.current.open()
+    }
 
     const getGroups = async () => {
         setLoading(true)
@@ -90,7 +165,10 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 },
             });
             if (resp?.data?.message) {
-                setGroupData([...resp?.data?.groups])
+                let receivedData = resp?.data?.groups
+                let data = await groupLeadAssignHandler(receivedData)
+                setGroupData(data)
+                setLoading(false)
             }
 
             if (resp?.data?.error) {
@@ -104,9 +182,192 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
             }
 
 
-        } catch (e) { console.log(e) }
-        setLoading(false)
+        } catch (e) { console.log(e); setLoading(false) }
+
     }
+
+    const groupLeadAssignHandler = (receivedData) => {
+        return new Promise((resolve, reject) => {
+            let newArr = [];
+            receivedData.map(async (item, index) => {
+                if (leadGroupData.some(i => i['id'] === item.id)) {
+                    receivedData[index].isChecked = true;
+                    let newLeadGroupObj = {}
+                    newLeadGroupObj['lead_id'] = (leadId).toString();
+                    newLeadGroupObj['group_id'] = (item.id).toString();
+                    newArr.push(newLeadGroupObj)
+                }
+            })
+            setNewLeadGroupData([...newArr]);
+            resolve(receivedData)
+        })
+    }
+
+    const saveGroupRefHandler = async () => {
+        if (newLeadGroupData.length === 0) {
+            setShowErrorToasterMsg('Please select a group')
+            setShowErrorToaster(true)
+            setTimeout(() => {
+                setShowErrorToaster(false)
+            }, 1000);
+            return;
+        }
+        setShowLoader(true)
+        refGroup.current.close();
+        try {
+            const response = await axios.post('/lead-group/create', { input: newLeadGroupData }, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadLeadData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+        setShowLoader(false)
+    }
+
+    const saveNotesRefHandler = async () => {
+
+        setShowLoader(true)
+        refNote.current.close()
+        try {
+            const response = await axios.post(`/leads/edit-note/${leadId}`, {
+                notes: (noteText).length > 0 ? noteText : null,
+            }, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadLeadData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.errors?.notes) {
+                setNoteTextError(true)
+                setNoteTextErrorValue(response?.data?.errors?.notes?.msg)
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+        setShowLoader(false)
+
+    }
+
+    const saveActivityRefHandler = async () => {
+
+        setShowLoader(true)
+        refCallLog.current.close()
+        try {
+            const response = await axios.post(`/activity/create/${leadId}`, {
+                type: activityLogType,
+            }, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadLeadData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+        setShowLoader(false)
+
+    }
+
 
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
@@ -117,7 +378,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
 
                             <MaterialIcons name="arrow-back-ios" size={25} color="black" />
-                            <Text style={styles.backButtonText}>{leadItem.name}</Text>
+                            <Text style={styles.backButtonText}>{leadDetail.name}</Text>
                         </TouchableOpacity>
                         :
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
@@ -130,7 +391,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 <View style={styles.middleContainer}>
                     <ScrollView onScroll={handleScroll}>
                         <View style={styles.HeadingTextContainer}>
-                            <Text style={styles.HeadingText}>{leadItem.name}</Text>
+                            <Text style={styles.HeadingText}>{leadDetail.name}</Text>
                         </View>
 
                         <View style={styles.SocialButtonContainer}>
@@ -153,7 +414,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                 <MaterialIcons name="schedule" size={45} color="white" />
                                 <Text style={styles.FollowGroupText}>Schedule Follow Up</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.FollowGroupButton} onPress={() => refGroup.current.open()}>
+                            <TouchableOpacity style={styles.FollowGroupButton} onPress={() => groupBtnHandler()}>
                                 <MaterialIcons name="group-add" size={45} color="white" />
                                 <Text style={styles.FollowGroupText}>Tap to add groups</Text>
                             </TouchableOpacity>
@@ -161,20 +422,20 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                         <View style={styles.detailContainer}>
                             <Text style={styles.detailHeaderText}>LEAD DETAIL</Text>
-                            <Text style={styles.detailText}>Facebook Lead via {leadItem.leadSource}</Text>
-                            <Text style={styles.detailText}>Campaign: {leadItem.ad}</Text>
-                            <Text style={styles.detailText}>Adset: {leadItem.adset}</Text>
-                            <Text style={styles.detailText}>Ad: {leadItem.ad}</Text>
-                            <Text style={styles.detailText}>Full Name: {leadItem.name}</Text>
-                            <Text style={styles.detailText}>Phone Number: {leadItem.phone}</Text>
-                            <Text style={styles.detailText}>Job Title: {leadItem.job}</Text>
-                            <Text style={styles.detailText}>Email: {leadItem.email}</Text>
-                            <Text style={styles.detailText}>{leadItem.extraInfo}</Text>
+                            <Text style={styles.detailText}>Facebook Lead via {leadDetail.leadSource}</Text>
+                            <Text style={styles.detailText}>Campaign: {leadDetail.ad}</Text>
+                            <Text style={styles.detailText}>Adset: {leadDetail.adset}</Text>
+                            <Text style={styles.detailText}>Ad: {leadDetail.ad}</Text>
+                            <Text style={styles.detailText}>Full Name: {leadDetail.name}</Text>
+                            <Text style={styles.detailText}>Phone Number: {leadDetail.phone}</Text>
+                            <Text style={styles.detailText}>Job Title: {leadDetail.job}</Text>
+                            <Text style={styles.detailText}>Email: {leadDetail.email}</Text>
+                            <Text style={styles.detailText}>{leadDetail.extraInfo}</Text>
                         </View>
 
                         <Pressable style={styles.noteContainer} onPress={() => refNote.current.open()} >
                             <Text style={styles.detailHeaderText}>NOTES</Text>
-                            <Text style={styles.detailText}>Tap to add note.</Text>
+                            <Text style={styles.detailText}>{leadDetail.notes === null ? "Tap to add note." : leadDetail.notes}</Text>
                         </Pressable>
 
                         <View style={styles.timelineContainer}>
@@ -264,7 +525,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                             <Text style={styles.logText}>{activityLogType}</Text>
                         </View>
                         <View style={styles.logBtnContainer}>
-                            <TouchableOpacity style={styles.LogApproveBtn} onPress={() => refCallLog.current.close()}>
+                            <TouchableOpacity style={styles.LogApproveBtn} onPress={() => saveActivityRefHandler()}>
                                 <Text style={styles.logBtnText}>Add {activityLogType} To Log Activity</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.LogDiscardBtn} onPress={() => refCallLog.current.close()}>
@@ -274,7 +535,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     </View>
                 </View>
             </BottomMaskPopUp>
-            <BottomMaskPopUp refRBSheet={refNote} height={350}>
+            <BottomMaskPopUp refRBSheet={refNote} height={370}>
                 <View styles={styles.optionsMainContainer}>
                     <View style={styles.optionsHeaderContainer}>
                         <Text style={styles.optionsHeaderText}>Notes</Text>
@@ -285,7 +546,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                             <TextInput placeholder="Enter notes..." style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={noteTextError ? "red" : "#ccc"} onChangeText={text => noteTextHandler(text)} defaultValue={noteText} />
                         </View>
                         <View style={styles.logBtnContainer}>
-                            <TouchableOpacity style={styles.LogApproveBtn} onPress={() => refNote.current.close()}>
+                            <TouchableOpacity style={styles.LogApproveBtn} onPress={() => saveNotesRefHandler()}>
                                 <Text style={styles.logBtnText}>Save</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.LogDiscardBtn} onPress={() => refNote.current.close()}>
@@ -307,8 +568,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                     return (
                                         <TouchableOpacity style={styles.checkBoxContainer} onPress={() => checkBoxHandler(item.id)} key={index}>
                                             <Text style={styles.checkBoxText}>{item.name}</Text>
-                                            {/* {console.log(item.isChecked)} */}
-                                            {item.isChecked==undefined || item.isChecked==false ?
+                                            {item.isChecked == undefined || item.isChecked == false ?
                                                 <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> :
                                                 <Fontisto name="checkbox-active" size={18} color="#33b9ff" />
                                             }
@@ -319,7 +579,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                             </ScrollView>
                             <View style={styles.logBtnContainer}>
-                                <TouchableOpacity style={styles.LogApproveBtn} onPress={() => refGroup.current.close()}>
+                                <TouchableOpacity style={styles.LogApproveBtn} onPress={() => saveGroupRefHandler()}>
                                     <Text style={styles.logBtnText}>Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.LogDiscardBtn} onPress={() => refGroup.current.close()}>
@@ -329,6 +589,10 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         </View>}
                 </View>
             </BottomMaskPopUp>
+
+            <Loader status={showLoader} />
+            <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
+            <Toaster message={showToasterMsg} status={showToaster} />
 
         </SafeAreaView>
     )
