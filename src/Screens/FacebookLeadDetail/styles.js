@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
 
     timelineDateContainer:{
         flexDirection: 'row',
-        width:100,
+        width:105,
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom:5

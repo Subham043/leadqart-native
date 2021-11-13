@@ -17,6 +17,7 @@ import GroupsListScreen from '../Screens/GroupsList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import LoadingScreen from '../Screens/Loading/index'
+import ActivityModal from '../Screens/ActivityModal/index'
 import BottomTab from '../Navigations/BottomTab'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../../axios"
@@ -25,6 +26,7 @@ import { login, logout, selectUser } from "../../app/feature/userSlice"
 import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../app/feature/refreshTokenSlice"
 
 const Stack = createNativeStackNavigator();
+
 
 let accessToken = null;
 let refreshToken = null;
@@ -48,27 +50,27 @@ const Router = () => {
                 },
             });
             if (response?.data?.message) {
-                if(mounted){
-                storeDataAsync("refreshToken", response?.data.refreshToken);
-                dispatch(login(response?.data.accessToken));
-                dispatch(setRefreshToken(response?.data.refreshToken));
+                if (mounted) {
+                    storeDataAsync("refreshToken", response?.data.refreshToken);
+                    dispatch(login(response?.data.accessToken));
+                    dispatch(setRefreshToken(response?.data.refreshToken));
                 }
             }
 
             if (response?.data?.error) {
                 // console.log(response?.data?.error);
-                if(mounted){
-                await AsyncStorage.removeItem('refreshToken')
-                dispatch(logout());
-                dispatch(removeRefreshToken());
+                if (mounted) {
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
                 }
 
             }
         } else {
-            if(mounted){
-            await AsyncStorage.removeItem('refreshToken')
-            dispatch(logout());
-            dispatch(removeRefreshToken());
+            if (mounted) {
+                await AsyncStorage.removeItem('refreshToken')
+                dispatch(logout());
+                dispatch(removeRefreshToken());
             }
         }
 
@@ -101,135 +103,138 @@ const Router = () => {
 
     return (
         <NavigationContainer>
-            {loading ? <LoadingScreen /> : 
-            <Stack.Navigator>
-                {user !== null ?
-                    <>
-                        <Stack.Screen
-                            name="Main"
-                            component={BottomTab}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="AddGroup"
-                            component={AddGroupScreen}
-                            options={{
-                                title: 'Add Group', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="AddMessage"
-                            component={AddMessageScreen}
-                            options={{
-                                title: 'Add Message', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="AddFile"
-                            component={AddFileScreen}
-                            options={{
-                                title: 'Add File', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="AddPage"
-                            component={AddPageScreen}
-                            options={{
-                                title: 'Add Page', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="FacebookLeadDetail"
-                            component={FacebookLeadDetailScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="ViewMessage"
-                            component={ViewMessageScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="GroupsList"
-                            component={GroupsListScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="FollowUpList"
-                            component={FollowUpListScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="LeadSearchList"
-                            component={LeadSearchListScreen}
-                            options={{ headerShown: false }}
-                        />
-                    </> :
-                    <>
-                        <Stack.Screen
-                            name="Home"
-                            component={HomeScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="Signin"
-                            component={LoginScreen}
-                            options={{
-                                title: 'Sign In', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="Signup"
-                            component={RegisterScreen}
-                            options={{
-                                title: 'Sign Up', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="ForgotPassword"
-                            component={ForgotPasswordScreen}
-                            options={{
-                                title: 'Forgot Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="OTP"
-                            component={OtpScreen}
-                            options={{
-                                title: 'Verification', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                        <Stack.Screen
-                            name="ResetPassword"
-                            component={ResetPasswordScreen}
-                            options={{
-                                title: 'Reset Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
-                                    alignItems: 'center',
-                                }, headerTitleAlign: 'center'
-                            }}
-                        />
-                    </>}
-                {/* <Stack.Screen
+            {loading ? <LoadingScreen /> :
+                <Stack.Navigator>
+                    {user !== null ?
+                        <>
+                            <Stack.Screen
+                                name="Main"
+                                component={BottomTab}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="AddGroup"
+                                component={AddGroupScreen}
+                                options={{
+                                    title: 'Add Group', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AddMessage"
+                                component={AddMessageScreen}
+                                options={{
+                                    title: 'Add Message', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AddFile"
+                                component={AddFileScreen}
+                                options={{
+                                    title: 'Add File', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AddPage"
+                                component={AddPageScreen}
+                                options={{
+                                    title: 'Add Page', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="FacebookLeadDetail"
+                                component={FacebookLeadDetailScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="ViewMessage"
+                                component={ViewMessageScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="GroupsList"
+                                component={GroupsListScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="FollowUpList"
+                                component={FollowUpListScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="LeadSearchList"
+                                component={LeadSearchListScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+                                <Stack.Screen name="ActivityModal" component={ActivityModal} options={{ headerShown: false }} />
+                            </Stack.Group>
+                        </> :
+                        <>
+                            <Stack.Screen
+                                name="Home"
+                                component={HomeScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="Signin"
+                                component={LoginScreen}
+                                options={{
+                                    title: 'Sign In', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="Signup"
+                                component={RegisterScreen}
+                                options={{
+                                    title: 'Sign Up', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="ForgotPassword"
+                                component={ForgotPasswordScreen}
+                                options={{
+                                    title: 'Forgot Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="OTP"
+                                component={OtpScreen}
+                                options={{
+                                    title: 'Verification', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="ResetPassword"
+                                component={ResetPasswordScreen}
+                                options={{
+                                    title: 'Reset Password', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                        </>}
+                    {/* <Stack.Screen
                     name="fb"
                     component={FacebookScreen}
                     options={{ headerShown: false }}
                 /> */}
-            </Stack.Navigator>}
+                </Stack.Navigator>}
         </NavigationContainer>
     )
 }

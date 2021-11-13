@@ -20,7 +20,7 @@ import ErrorToaster from '../../Components/ErrorToaster'
 const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
     const { leadId, leadItem } = route.params;
-    
+
     const refRBSheet = useRef();
     const refCallLog = useRef();
     const refNote = useRef();
@@ -39,6 +39,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const [leadGroupData, setLeadGroupData] = React.useState([]);
     const [newLeadGroupData, setNewLeadGroupData] = React.useState([]);
     const [leadDetail, setLeadDetail] = React.useState({});
+    const [activityData, setActivityData] = React.useState([]);
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -51,22 +52,22 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     }
 
     const callHandler = () => {
-        Linking.openURL(`tel:+91${leadItem.phone}`)
+        Linking.openURL(`tel:+91${leadDetail.phone}`)
         refCallLog.current.open()
         setActivityLogType('Phone Call')
     }
     const smsHandler = () => {
-        Linking.openURL(`sms:${leadItem.phone}`)
+        Linking.openURL(`sms:${leadDetail.phone}`)
         refCallLog.current.open()
         setActivityLogType('Message')
     }
     const emailHandler = () => {
-        Linking.openURL(`mailto:${leadItem.email}`)
+        Linking.openURL(`mailto:${leadDetail.email}`)
         refCallLog.current.open()
         setActivityLogType('Email')
     }
     const whatsappHandler = () => {
-        Linking.openURL(`whatsapp://send?phone=+91${leadItem.phone}`)
+        Linking.openURL(`whatsapp://send?phone=+91${leadDetail.phone}`)
         refCallLog.current.open()
         setActivityLogType('Whatsapp')
     }
@@ -79,6 +80,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         loadLeadData();
+        loadActivityData();
     }, [leadId])
 
     const loadLeadData = async () => {
@@ -90,10 +92,37 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 },
             });
             if (resp?.data?.message) {
-                console.log(resp?.data?.leads);
                 setLeadDetail(resp?.data?.leads)
                 setLeadGroupData(resp?.data?.leads.groups)
                 setNoteText(resp?.data?.leads.notes === null ? "" : resp?.data?.leads.notes)
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                    return;
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+        setShowLoader(false)
+    }
+
+    const loadActivityData = async () => {
+        setShowLoader(true)
+        try {
+            const resp = await axios.get(`/activity/view-all/${leadId}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            if (resp?.data?.message) {
+                setActivityData(resp?.data?.groups)
             }
 
             if (resp?.data?.error) {
@@ -335,7 +364,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 setTimeout(() => {
                     setShowToaster(false)
                 }, 1000);
-                loadLeadData();
+                loadActivityData();
             }
 
             if (response?.data?.rateLimit) {
@@ -366,6 +395,61 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         }
         setShowLoader(false)
 
+    }
+
+    const getMonthInWord = (month) => {
+        switch (month) {
+            case 1:
+                return "Jan";
+                break;
+            case 2:
+                return "Feb";
+                break;
+            case 3:
+                return "Mar";
+                break;
+            case 4:
+                return "Apr";
+                break;
+            case 5:
+                return "May";
+                break;
+            case 6:
+                return "Jun";
+                break;
+            case 7:
+                return "Jul";
+                break;
+            case 8:
+                return "Aug";
+                break;
+            case 9:
+                return "Sep";
+                break;
+            case 10:
+                return "Oct";
+                break;
+            case 11:
+                return "Nov";
+                break;
+            case 12:
+                return "Dec";
+                break;
+            default:
+                return "Jan";
+                break;
+        }
+    }
+
+    const formatAMPM = (date) => {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
     }
 
 
@@ -440,44 +524,39 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                         <View style={styles.timelineContainer}>
                             <Text style={styles.timelineHeaderText}>TIMELINE</Text>
-                            <TouchableOpacity style={styles.timelineItemContainer}>
+                            <TouchableOpacity style={styles.timelineItemContainer} onPress={() => navigation.navigate('ActivityModal')}>
                                 <View style={styles.addActivityIcon}><Ionicons name="ios-add-sharp" size={25} color="#33b9ff" /></View>
                                 <Text style={styles.addActivityText}>Add Activity</Text>
                             </TouchableOpacity>
-                            <View>
-                                <View style={styles.timeLine}></View>
-                                <TouchableOpacity style={styles.timelineItemOtherContainer}>
-                                    <View style={styles.timelineIcon}><Ionicons name="call" size={20} color="white" /></View>
-                                    <View style={styles.timelineDetailText}>
-                                        <View style={styles.timelineDateContainer}>
-                                            <Text style={styles.timelineDate}>26 Oct</Text>
-                                            <Text style={styles.timelineTime}>1:23pm</Text>
+                            {activityData.map(item => (
+
+                                <View key={item.id}>
+                                    <View style={styles.timeLine}></View>
+                                    <TouchableOpacity style={styles.timelineItemOtherContainer}>
+                                        <View style={styles.timelineIcon}>
+                                            {item.type === "Phone Call" ? <Ionicons name="call" size={20} color="white" /> : null}
+                                            {item.type === "Whatsapp" ? <Ionicons name="logo-whatsapp" size={20} color="white" /> : null}
+                                            {item.type === "Message" ? <MaterialIcons name="message" size={20} color="white" /> : null}
+                                            {item.type === "Email" ? <Ionicons name="ios-mail-sharp" size={20} color="white" /> : null}
                                         </View>
-                                        <Text style={styles.timelineText}>Phone Call</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <View style={styles.timeLine}></View>
-                                <TouchableOpacity style={styles.timelineItemOtherContainer}>
-                                    <View style={styles.timelineIcon}><Ionicons name="logo-whatsapp" size={20} color="white" /></View>
-                                    <View style={styles.timelineDetailText}>
-                                        <View style={styles.timelineDateContainer}>
-                                            <Text style={styles.timelineDate}>26 Oct</Text>
-                                            <Text style={styles.timelineTime}>1:23pm</Text>
+                                        <View style={styles.timelineDetailText}>
+                                            <View style={styles.timelineDateContainer}>
+                                                <Text style={styles.timelineDate}>{new Date(item.created_at).getDate()} {getMonthInWord(new Date(item.created_at).getMonth() + 1)}</Text>
+                                                <Text style={styles.timelineTime}>{formatAMPM(new Date(item.created_at))}</Text>
+                                            </View>
+                                            <Text style={styles.timelineText}>{item.type}</Text>
                                         </View>
-                                        <Text style={styles.timelineText}>Whatsapp</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
                             <View>
                                 <View style={styles.timeLine}></View>
                                 <View style={styles.timelineItemOtherContainer}>
                                     <View style={styles.timelineIcon}><Ionicons name="ios-person-add" size={20} color="white" /></View>
                                     <View style={styles.timelineDetailText}>
                                         <View style={styles.timelineDateContainer}>
-                                            <Text style={styles.timelineDate}>26 Oct</Text>
-                                            <Text style={styles.timelineTime}>1:23pm</Text>
+                                            <Text style={styles.timelineDate}>{new Date(leadDetail.created_at).getDate()} {getMonthInWord(new Date(leadDetail.created_at).getMonth() + 1)}</Text>
+                                            <Text style={styles.timelineTime}>{formatAMPM(new Date(leadDetail.created_at))}</Text>
                                         </View>
                                         <Text style={styles.timelineText}>Client added to Leadqart</Text>
                                     </View>
