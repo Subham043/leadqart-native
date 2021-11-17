@@ -16,6 +16,7 @@ import GroupSelectionPlaceholder from '../../Components/GroupSelectionPlaceholde
 import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
+import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 
 const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
@@ -25,9 +26,11 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const refCallLog = useRef();
     const refNote = useRef();
     const refGroup = useRef();
+    const refActivity = useRef();
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const reload = useSelector(selectReload)
 
     const [showNavbarText, setShowNavbarText] = useState(false)
     const [activityLogType, setActivityLogType] = useState("")
@@ -40,6 +43,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const [newLeadGroupData, setNewLeadGroupData] = React.useState([]);
     const [leadDetail, setLeadDetail] = React.useState({});
     const [activityData, setActivityData] = React.useState([]);
+    const [activityObject, setActivityObject] = React.useState({});
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -81,7 +85,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     useEffect(() => {
         loadLeadData();
         loadActivityData();
-    }, [leadId])
+    }, [leadId, reload])
 
     const loadLeadData = async () => {
         setShowLoader(true)
@@ -179,6 +183,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     }, [leadId])
 
     const groupBtnHandler = () => {
+        refRBSheet.current.close()
         setLeadGroupData(leadItem.groups)
         setGroupData([])
         getGroups();
@@ -452,6 +457,64 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         return strTime;
     }
 
+    const ActivityOptionHandler = (item) => {
+        setActivityObject(item)
+        refActivity.current.open()
+    }
+
+    const ActivityDeleteHandler = async () => {
+        setShowLoader(true)
+        refActivity.current.close()
+        try {
+            const response = await axios.delete(`/activity/delete/${activityObject.id}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadActivityData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+        setShowLoader(false)
+    }
+
+    const ActivityEditHandler = () =>{
+        refActivity.current.close()
+        navigation.navigate('ActivityEditModal',{activity:activityObject, name:leadDetail.name})
+    }
+
 
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
@@ -524,7 +587,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                         <View style={styles.timelineContainer}>
                             <Text style={styles.timelineHeaderText}>TIMELINE</Text>
-                            <TouchableOpacity style={styles.timelineItemContainer} onPress={() => navigation.navigate('ActivityModal')}>
+                            <TouchableOpacity style={styles.timelineItemContainer} onPress={() => navigation.navigate('ActivityModal',{leadId:leadDetail.id, name:leadDetail.name})}>
                                 <View style={styles.addActivityIcon}><Ionicons name="ios-add-sharp" size={25} color="#33b9ff" /></View>
                                 <Text style={styles.addActivityText}>Add Activity</Text>
                             </TouchableOpacity>
@@ -532,7 +595,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                                 <View key={item.id}>
                                     <View style={styles.timeLine}></View>
-                                    <TouchableOpacity style={styles.timelineItemOtherContainer}>
+                                    <TouchableOpacity style={styles.timelineItemOtherContainer} onPress={() => ActivityOptionHandler(item)}>
                                         <View style={styles.timelineIcon}>
                                             {item.type === "Phone Call" ? <Ionicons name="call" size={20} color="white" /> : null}
                                             {item.type === "Whatsapp" ? <Ionicons name="logo-whatsapp" size={20} color="white" /> : null}
@@ -577,7 +640,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     <View style={styles.optionsHeaderContainer}>
                         <Text style={styles.optionsHeaderText}>Options</Text>
                     </View>
-                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                    <TouchableOpacity onPress={() => groupBtnHandler()} style={styles.optionsContainer}>
                         <MaterialIcons name="group-add" size={20} color="#33b9ff" />
                         <Text style={styles.optionsText}>Add to Groups</Text>
                     </TouchableOpacity>
@@ -666,6 +729,21 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                 </TouchableOpacity>
                             </View>
                         </View>}
+                </View>
+            </BottomMaskPopUp>
+            <BottomMaskPopUp refRBSheet={refActivity} height={200}>
+                <View styles={styles.optionsMainContainer}>
+                    <View style={styles.optionsHeaderContainer}>
+                        <Text style={styles.optionsHeaderText}>Options: {activityObject.type} on {new Date(activityObject.created_at).getDate()} {getMonthInWord(new Date(activityObject.created_at).getMonth() + 1)} {new Date(activityObject.created_at).getFullYear()}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => ActivityEditHandler()} style={styles.optionsContainer}>
+                        <FontAwesome5 name="user-check" size={18} color="#33b9ff" />
+                        <Text style={styles.optionsText}>View or Edit Activity</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => ActivityDeleteHandler()} style={styles.optionsContainer}>
+                        <MaterialIcons name="delete" size={20} color="#33b9ff" />
+                        <Text style={styles.optionsText}>Delete Activity</Text>
+                    </TouchableOpacity>
                 </View>
             </BottomMaskPopUp>
 

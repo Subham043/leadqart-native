@@ -18,6 +18,7 @@ import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import LoadingScreen from '../Screens/Loading/index'
 import ActivityModal from '../Screens/ActivityModal/index'
+import ActivityEditModal from '../Screens/ActivityEditModal/index'
 import BottomTab from '../Navigations/BottomTab'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../../axios"
@@ -175,6 +176,7 @@ const Router = () => {
                             />
                             <Stack.Group screenOptions={{ presentation: 'modal' }}>
                                 <Stack.Screen name="ActivityModal" component={ActivityModal} options={{ headerShown: false }} />
+                                <Stack.Screen name="ActivityEditModal" component={ActivityEditModal} options={{ headerShown: false }} />
                             </Stack.Group>
                         </> :
                         <>

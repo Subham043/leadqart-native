@@ -16,19 +16,19 @@ import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
 
-const ActivityModal = ({ navigation, route }) => {
+const ActivityEditModal = ({ navigation, route }) => {
 
-    const { leadId, name } = route.params;
+    const { activity, name } = route.params;
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
     const reload = useSelector(selectReload)
 
-    const [activityLogType, setActivityLogType] = useState("Phone Call")
-    const [dateInput, setDateInput] = useState(new Date())
-    const [isChecked, setIsChecked] = useState("Phone Call")
+    const [activityLogType, setActivityLogType] = useState(activity.type)
+    const [dateInput, setDateInput] = useState(new Date(activity.timestamp!== null?activity.timestamp:activity.created_at))
+    const [isChecked, setIsChecked] = useState(activity.type)
 
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(new Date(activity.timestamp!== null?activity.timestamp:activity.created_at));
     const [modeDateTime, setModeDateTime] = useState('date');
     const [showDateTime, setShowDateTime] = useState(false);
 
@@ -126,7 +126,7 @@ const ActivityModal = ({ navigation, route }) => {
 
         setShowLoader(true)
         try {
-            const response = await axios.post(`/activity/create/${leadId}`, {
+            const response = await axios.post(`/activity/edit/${activity.id}`, {
                 type: activityLogType,
                 timestamp: dateInput
             }, {
@@ -182,7 +182,7 @@ const ActivityModal = ({ navigation, route }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
 
                         <MaterialIcons name="arrow-back-ios" size={25} color="white" />
-                        <Text style={styles.backButtonText}>Add Activity With {name}</Text>
+                        <Text style={styles.backButtonText}>Edit Activity With {name}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.modalView}>
@@ -215,7 +215,7 @@ const ActivityModal = ({ navigation, route }) => {
                     <View style={styles.bottomContainer}>
                         <TouchableOpacity onPress={() => saveActivityRefHandler()}
                             style={styles.saveContainer}>
-                            <Text style={styles.textStyle}>ADD ACTIVITY</Text>
+                            <Text style={styles.textStyle}>UPDATE ACTIVITY</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -278,4 +278,4 @@ const ActivityModal = ({ navigation, route }) => {
     )
 }
 
-export default ActivityModal
+export default ActivityEditModal
