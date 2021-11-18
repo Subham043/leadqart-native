@@ -92,7 +92,36 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     useEffect(() => {
         loadLeadData();
         loadActivityData();
+        loadFollowUpData();
     }, [leadId, reload])
+
+    const loadFollowUpData = async () => {
+        setShowLoader(true)
+        try {
+            const resp = await axios.get(`/follow-up/view-via-lead/${leadId}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            if (resp?.data?.message) {
+                setFollowChecked(resp?.data?.followUps.type)
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                    return;
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+        setShowLoader(false)
+    }
 
     const loadLeadData = async () => {
         setShowLoader(true)
