@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Pressable, TextInput } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Pressable, TextInput, Platform } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { StatusBar as SBar } from 'react-native'
 import styles from './styles'
@@ -17,6 +17,7 @@ import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
 import { setReload, selectReload } from "../../../app/feature/reloadSlice"
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
@@ -27,6 +28,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const refNote = useRef();
     const refGroup = useRef();
     const refActivity = useRef();
+    const refFollow = useRef();
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -44,12 +46,17 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const [leadDetail, setLeadDetail] = React.useState({});
     const [activityData, setActivityData] = React.useState([]);
     const [activityObject, setActivityObject] = React.useState({});
+    const [followChecked, setFollowChecked] = useState("NEVER")
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
+
+    const [date, setDate] = useState(new Date());
+    const [modeDateTime, setModeDateTime] = useState('date');
+    const [showDateTime, setShowDateTime] = useState(false);
 
     const handleScroll = (event) => {
         event.nativeEvent.contentOffset.y > 56 ? setShowNavbarText(true) : setShowNavbarText(false)
@@ -515,6 +522,104 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         navigation.navigate('ActivityEditModal',{activity:activityObject, name:leadDetail.name})
     }
 
+    const followCheckBoxHandler = async (value) =>{
+        setFollowChecked(value);
+        setShowLoader(true)
+        refFollow.current.close()
+        if(value==="SOMEDAY"){
+            updateFollowUp({
+                type:"SOMEDAY",
+                description:null,
+                timestamp:null
+            })
+        }else if(value==="TODAY"){
+            updateFollowUp({
+                type:"TODAY",
+                description:null,
+                timestamp:new Date()
+            })
+        }else if(value==="TOMORROW"){
+            updateFollowUp({
+                type:"TOMORROW",
+                description:null,
+                timestamp:new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+            })
+        }else if(value==="CUSTOM"){
+            showDatepicker()
+        }else if(value==="NEVER"){
+            updateFollowUp({
+                type:"NEVER",
+                description:null,
+                timestamp:null
+            })
+        }
+    }
+
+    const updateFollowUp = async (obj) => {
+        try {
+            const response = await axios.post(`/follow-up/create/${leadDetail.id}`, obj, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadActivityData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+    }
+
+    const onChangeDateTimePicker = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDateTime(Platform.OS === 'ios');
+        setDate(currentDate);
+        updateFollowUp({
+            type:"CUSTOM",
+            description:null,
+            timestamp:currentDate
+        })
+    };
+
+    const showMode = (currentMode) => {
+        setShowDateTime(true);
+        setModeDateTime(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
 
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
@@ -557,7 +662,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         </View>
 
                         <View style={styles.FollowGroupButtonContainer}>
-                            <TouchableOpacity style={styles.FollowGroupButton}>
+                            <TouchableOpacity style={styles.FollowGroupButton} onPress={() =>refFollow.current.open()}>
                                 <MaterialIcons name="schedule" size={45} color="white" />
                                 <Text style={styles.FollowGroupText}>Schedule Follow Up</Text>
                             </TouchableOpacity>
@@ -746,6 +851,65 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </BottomMaskPopUp>
+            <BottomMaskPopUp refRBSheet={refFollow} height={390}>
+                <View styles={styles.optionsMainContainer}>
+                    <View style={styles.optionsHeaderContainer}>
+                        <Text style={styles.optionsHeaderText}>Schedule Follow Up</Text>
+                    </View>
+                    <View style={[styles.groupOptionScrollBackground]}>
+                        <ScrollView style={[styles.groupOptionScroll]}>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("TODAY")} >
+                                <Text style={styles.checkBoxText}>Today</Text>
+                                {followChecked === "TODAY" ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("TOMORROW")} >
+                                <Text style={styles.checkBoxText}>Tomorrow</Text>
+                                {followChecked === "TOMORROW" ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("CUSTOM")} >
+                                <Text style={styles.checkBoxText}>Select custom date & time</Text>
+                                {followChecked === "CUSTOM" ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("SOMEDAY")} >
+                                <Text style={styles.checkBoxText}>Someday</Text>
+                                {followChecked === "SOMEDAY" ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("NEVER")} >
+                                <Text style={styles.checkBoxText}>Never</Text>
+                                {followChecked === "NEVER" ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                }
+                            </TouchableOpacity>
+
+
+                        </ScrollView>
+                    </View>
+                </View>
+            </BottomMaskPopUp>
+
+            {showDateTime && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    value={date}
+                    mode={modeDateTime}
+                    is24Hour={true}
+                    display="default"
+                    onChange={onChangeDateTimePicker}
+                />
+            )}
 
             <Loader status={showLoader} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
