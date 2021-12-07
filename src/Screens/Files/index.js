@@ -110,10 +110,10 @@ const FilesScreen = ({ navigation, tabIndexNumber }) => {
                 {loading ? <FileCardPlaceholder /> : null}
                 {searchText.length > 0 && tabIndexNumber === 1 ?
                 searchData.map((item, index) => {
-                    return (<FileCard name={item.name} key={index} />);
+                    return (<FileCard name={item.name} id={item.id} key={index} navigation={navigation} />);
                 }):
                 fileData.map((item, index) => {
-                    return (<FileCard name={item.name} key={index} />);
+                    return (<FileCard name={item.name} id={item.id} key={index} navigation={navigation} />);
                 })
             }
             </ScrollView>

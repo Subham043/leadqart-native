@@ -111,11 +111,11 @@ const MessageScreen = ({ navigation, tabIndexNumber }) => {
                 {loading ? <MessageCardPlaceholder /> : null}
                 {searchText.length > 0 && tabIndexNumber === 0 ?
                 searchData.map((item, index) => {
-                    return (<MessageCard name={item.title} description={item.message} key={index} navigation={navigation} />);
+                    return (<MessageCard id={item.id} name={item.title} description={item.message} key={index} navigation={navigation} />);
                 })
                 :
                 messageData.map((item, index) => {
-                    return (<MessageCard name={item.title} description={item.message} key={index} navigation={navigation} />);
+                    return (<MessageCard id={item.id} name={item.title} description={item.message} key={index} navigation={navigation} />);
                 })
                 }
             </ScrollView>

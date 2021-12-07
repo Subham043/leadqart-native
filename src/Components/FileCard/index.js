@@ -4,11 +4,13 @@ import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const FileCard = ({ name }) => {
+const FileCard = ({ name, id, navigation }) => {
 
 
     return (
-        <TouchableOpacity style={styles.messageMainContainer}>
+        <TouchableOpacity style={styles.messageMainContainer} onPress={()=>navigation.navigate('ViewFile',{
+            id,name
+        })} >
             <View style={styles.leftMainContainer}>
                 <View style={styles.pdfContainer}>
                     <FontAwesome5 name="file-pdf" size={40} color="gray" />
