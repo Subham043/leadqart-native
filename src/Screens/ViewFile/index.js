@@ -35,8 +35,8 @@ const ViewFileScreen = ({ route, navigation }) => {
 
     const EditMessageHandler = () => {
         refRBSheet.current.close();
-        navigation.navigate('EditMessage', {
-            id, name: title,
+        navigation.navigate('EditFile', {
+            id, title,
         })
     }
 
@@ -145,7 +145,7 @@ const ViewFileScreen = ({ route, navigation }) => {
                                     <FontAwesome5 name="file-pdf" size={40} color="gray" />
                                 </View>
                                 <View style={styles.textContainer}>
-                                    <Text style={styles.title}>{name}</Text>
+                                    <Text style={styles.title}>{title}</Text>
                                 </View>
                             </View>
                             <View style={styles.rightMainContainer}>

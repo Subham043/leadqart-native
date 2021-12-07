@@ -10,6 +10,7 @@ import ResetPasswordScreen from '../Screens/ResetPassword/index'
 import AddGroupScreen from '../Screens/AddGroup/index'
 import AddMessageScreen from '../Screens/AddMessage/index'
 import EditMessageScreen from '../Screens/EditMessage/index'
+import EditFileScreen from '../Screens/EditFile/index'
 import AddFileScreen from '../Screens/AddFile/index'
 import AddPageScreen from '../Screens/AddPage/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
@@ -138,6 +139,15 @@ const Router = () => {
                                 component={EditMessageScreen}
                                 options={{
                                     title: 'Edit Message', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="EditFile"
+                                component={EditFileScreen}
+                                options={{
+                                    title: 'Edit File', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }}
