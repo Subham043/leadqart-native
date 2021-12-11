@@ -17,6 +17,7 @@ import AddPageScreen from '../Screens/AddPage/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import ViewMessageScreen from '../Screens/ViewMessage/index'
 import SendMessageScreen from '../Screens/SendMessage/index'
+import SendFileScreen from '../Screens/SendFile/index'
 import ViewFileScreen from '../Screens/ViewFile/index'
 import ViewPageScreen from '../Screens/ViewPage/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
@@ -196,6 +197,11 @@ const Router = () => {
                             <Stack.Screen
                                 name="SendMessage"
                                 component={SendMessageScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="SendFile"
+                                component={SendFileScreen}
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen

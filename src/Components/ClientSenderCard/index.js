@@ -17,6 +17,11 @@ const ClientSenderCard = ({ navigation, item, type, typeId }) => {
                 messageId:typeId, 
                 userId:item.id
             })
+        }else if(type==="content-file"){
+            navigation.navigate('SendFile',{
+                fileId:typeId, 
+                userId:item.id
+            })
         }
     }
 
