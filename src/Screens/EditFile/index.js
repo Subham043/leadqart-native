@@ -90,14 +90,14 @@ const EditFileScreen = ({ navigation, route }) => {
             setNameErrorValue('')
         }
 
-        // if (upload == '') {
-        //     setUploadError(true)
-        //     setUploadErrorValue('Please select a pdf')
-        //     return;
-        // } else {
-        //     setUploadError(false)
-        //     setUploadErrorValue('')
-        // }
+        if (upload == '') {
+            setUploadError(true)
+            setUploadErrorValue('Please select a pdf')
+            return;
+        } else {
+            setUploadError(false)
+            setUploadErrorValue('')
+        }
 
         if (nameError || uploadError) {
             return;

@@ -109,10 +109,10 @@ const PagesScreen = ({ navigation, tabIndexNumber }) => {
                 {loading ? <PageCardPlaceholder /> : null}
                 {searchText.length > 0 && tabIndexNumber === 2 ?
                 searchData.map((item, index) => {
-                    return (<PageCard name={item.title} image={item.image} description={item.description} key={index} />);
+                    return (<PageCard name={item.title} id={item.id} image={item.image} description={item.description} navigation={navigation} key={index} />);
                 }):
                 pageData.map((item, index) => {
-                    return (<PageCard name={item.title} image={item.image} description={item.description} key={index} />);
+                    return (<PageCard name={item.title} id={item.id} image={item.image} description={item.description} navigation={navigation} key={index} />);
                 })
             }
             </ScrollView>

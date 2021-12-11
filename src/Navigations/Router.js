@@ -11,14 +11,18 @@ import AddGroupScreen from '../Screens/AddGroup/index'
 import AddMessageScreen from '../Screens/AddMessage/index'
 import EditMessageScreen from '../Screens/EditMessage/index'
 import EditFileScreen from '../Screens/EditFile/index'
+import EditPageScreen from '../Screens/EditPage/index'
 import AddFileScreen from '../Screens/AddFile/index'
 import AddPageScreen from '../Screens/AddPage/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import ViewMessageScreen from '../Screens/ViewMessage/index'
+import SendMessageScreen from '../Screens/SendMessage/index'
 import ViewFileScreen from '../Screens/ViewFile/index'
+import ViewPageScreen from '../Screens/ViewPage/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
+import ClientSenderListScreen from '../Screens/ClientSenderList/index'
 import LoadingScreen from '../Screens/Loading/index'
 import ActivityModal from '../Screens/ActivityModal/index'
 import ActivityEditModal from '../Screens/ActivityEditModal/index'
@@ -153,6 +157,15 @@ const Router = () => {
                                 }}
                             />
                             <Stack.Screen
+                                name="EditPage"
+                                component={EditPageScreen}
+                                options={{
+                                    title: 'Edit Page', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
                                 name="AddFile"
                                 component={AddFileScreen}
                                 options={{
@@ -181,8 +194,18 @@ const Router = () => {
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen
+                                name="SendMessage"
+                                component={SendMessageScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
                                 name="ViewFile"
                                 component={ViewFileScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="ViewPage"
+                                component={ViewPageScreen}
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen
@@ -199,6 +222,15 @@ const Router = () => {
                                 name="LeadSearchList"
                                 component={LeadSearchListScreen}
                                 options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="ClientSenderList"
+                                component={ClientSenderListScreen}
+                                options={{
+                                    title: 'Select a client', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
                             />
                             <Stack.Group screenOptions={{ presentation: 'modal' }}>
                                 <Stack.Screen name="ActivityModal" component={ActivityModal} options={{ headerShown: false }} />
