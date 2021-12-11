@@ -136,9 +136,7 @@ const SendMessageScreen = ({ route,navigation }) => {
             <StatusBar style="light" backgroundColor="#33b9ff" />
             <View style={styles.layerContainer}>
                 <View style={styles.topContainer}>
-                    <TouchableOpacity onPress={() => navigation.navigate('ViewMessage',{
-                id:messageId,name:title,description:message
-                })} style={styles.backButtonContainer}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
                         <MaterialIcons name="arrow-back" size={25} color="#fff" />
                     </TouchableOpacity>
                         <Text style={styles.backButtonText}>{title}</Text>

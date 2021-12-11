@@ -4,8 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StatusBar as SBar } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 import BottomMaskPopUp from '../../Components/BottomMaskPopUp';
 import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
@@ -14,21 +14,24 @@ import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import axios from "../../../axios"
+import * as Linking from 'expo-linking';
+import qs from 'qs';
 
-const ViewPageScreen = ({ route, navigation }) => {
+const SendPageScreen = ({ route, navigation }) => {
 
     const refRBSheet = useRef();
-    const { id,name, description, image, } = route.params;
+    const { pageId, userId } = route.params;
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
     const reload = useSelector(selectReload)
 
-    const [title, setTitle] = useState(name)
-    const [desc, setDesc] = useState(description)
+    const [title, setTitle] = useState("")
+    const [desc, setDesc] = useState("")
     const [youtubeVideo, setYoutubeVideo] = useState("")
     const [map, setMap] = useState("")
-    const [upload, setUpload] = useState(image)
+    const [upload, setUpload] = useState("")
+    const [leadDetail, setLeadDetail] = React.useState({});
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -36,75 +39,20 @@ const ViewPageScreen = ({ route, navigation }) => {
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
 
-    const EditMessageHandler = () => {
-        refRBSheet.current.close();
-        navigation.navigate('EditPage', {
-            id, ttl:title, desc, upload, yv:youtubeVideo, mp:map
-        })
-    }
-
-    const DeleteMessageHandler = async () => {
-        refRBSheet.current.close();
-        setShowLoader(true)
-        try {
-            const response = await axios.delete(`/content-page/delete/${id}`, {
-                headers: {
-                    'authorization': 'bearer ' + user,
-                },
-            });
-            setShowLoader(false)
-            if (response?.data?.message) {
-                setShowToasterMsg(response?.data?.message)
-                setShowToaster(true)
-                setTimeout(() => {
-                    setShowToaster(false)
-                    dispatch(setReload(true));
-                    navigation.goBack();
-                }, 1000);
-            }
-
-            if (response?.data?.rateLimit) {
-                setShowErrorToasterMsg(response?.data?.rateLimit)
-                setShowErrorToaster(true)
-                setTimeout(() => {
-                    setShowErrorToaster(false)
-                }, 1000);
-            }
-
-            if (response?.data?.error) {
-                if (response?.data?.error === "Unauthorised") {
-                    await AsyncStorage.removeItem('accessToken')
-                    await AsyncStorage.removeItem('refreshToken')
-                    dispatch(logout());
-                    dispatch(removeRefreshToken());
-                }
-                setShowErrorToasterMsg(response?.data?.error)
-                setShowErrorToaster(true)
-                setTimeout(() => {
-                    setShowErrorToaster(false)
-                }, 1000);
-            }
-
-        } catch (error) {
-            setShowLoader(false)
-            console.log(error);
-        }
-        setShowLoader(false)
-    }
-
     useEffect(() => {
         loadFileData();
-    }, [id, reload])
+        loadLeadData();
+    }, [pageId, userId, reload])
 
     const loadFileData = async () => {
         setShowLoader(true)
         try {
-            const resp = await axios.get(`/content-page/view/${id}`, {
+            const resp = await axios.get(`/content-page/view/${pageId}`, {
                 headers: {
                     'authorization': 'bearer ' + user,
                 },
             });
-            
+
             if (resp?.data?.message) {
                 setTitle(resp?.data?.contentPage?.title)
                 setDesc(resp?.data?.contentPage?.description)
@@ -129,10 +77,63 @@ const ViewPageScreen = ({ route, navigation }) => {
         setShowLoader(false)
     }
 
-    const sendClientHandler = () => {
-        navigation.navigate('ClientSenderList',{
-            searchText:"Search clients & phonebook", sendItemType:"content-page",itemId:id
-        })
+    const loadLeadData = async () => {
+        setShowLoader(true)
+        try {
+            const resp = await axios.get(`/leads/view/${userId}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            if (resp?.data?.message) {
+                setLeadDetail(resp?.data?.leads)
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                    return;
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+        setShowLoader(false)
+    }
+
+    const sendMessageHandler = async (messageType) => {
+        if (messageType === 'Whatsapp') {
+            Linking.openURL(`whatsapp://send?text=https://leadqart.herokuapp.com/content-page/view-page/${pageId}&phone=+91${leadDetail.phone}`)
+        } else if (messageType === 'Message') {
+            let url = `sms:${leadDetail.phone}`;
+            let query = qs.stringify({
+                body: `https://leadqart.herokuapp.com/content-page/view-page/${pageId}`,
+            });
+            if (query.length) {
+                Platform.OS === 'android' ? url += `?${query}` : url += `&${query}`;
+            }
+            let canOpen = await Linking.canOpenURL(url);
+            if (canOpen) {
+                Linking.openURL(url)
+            }
+        } else if (messageType === 'Email') {
+            let url = `mailto:${leadDetail.email}`;
+            let query = qs.stringify({
+                body: `https://leadqart.herokuapp.com/content-page/view-page/${pageId}`,
+            });
+            if (query.length) {
+                url += `?${query}`;
+            }
+            let canOpen = await Linking.canOpenURL(url);
+            if (canOpen) {
+                Linking.openURL(url)
+            }
+        }
+        refRBSheet.current.close();
     }
 
 
@@ -145,14 +146,15 @@ const ViewPageScreen = ({ route, navigation }) => {
                         <MaterialIcons name="arrow-back" size={25} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.backButtonText}>{title}</Text>
-                    <TouchableOpacity onPress={() => refRBSheet.current.open()} >
-                        <Text style={styles.backButtonText}>Options</Text>
-                    </TouchableOpacity>
                 </View>
                 <View style={styles.middleContainer}>
                     <ScrollView>
 
-                        <TouchableOpacity style={styles.messageMainContainer} onPress={() => navigation.navigate('WebPage',{id})}>
+                        <View style={styles.sendDetailContainer}>
+                            <Text style={styles.detailText}>Sending to <Text style={styles.sendNameText}>{leadDetail.name}</Text></Text>
+                        </View>
+
+                        <TouchableOpacity style={styles.messageMainContainer} onPress={() => navigation.navigate('WebPage', { id: pageId })}>
                             <View style={styles.leftMainContainer}>
                                 <View style={styles.pdfContainer}>
                                     <Image source={{ uri: `https://leadqart.herokuapp.com/uploads/${upload}` }} style={styles.pdfImage} />
@@ -170,23 +172,26 @@ const ViewPageScreen = ({ route, navigation }) => {
                     </ScrollView>
                 </View>
                 <View style={styles.bottomContainer}>
-                    <TouchableOpacity style={styles.bottomButton} onPress={() => sendClientHandler()}>
-                        <Text style={styles.bottomButtonText}>SEND TO CLIENT</Text>
+                    <TouchableOpacity style={styles.bottomFirstButton} onPress={() => refRBSheet.current.open()}>
+                        <FontAwesome5 name="share-alt" size={20} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.bottomButton} onPress={() => sendMessageHandler('Whatsapp')}>
+                        <Text style={styles.bottomButtonText}>SEND VIA WHATSAPP</Text>
                     </TouchableOpacity>
                 </View>
             </View>
             <BottomMaskPopUp refRBSheet={refRBSheet} height={200}>
                 <View styles={styles.optionsMainContainer}>
                     <View style={styles.optionsHeaderContainer}>
-                        <Text style={styles.optionsHeaderText}>Options</Text>
+                        <Text style={styles.optionsHeaderText}>Other sending options</Text>
                     </View>
-                    <TouchableOpacity onPress={() => EditMessageHandler()} style={styles.optionsContainer}>
-                        <AntDesign name="edit" size={20} color="#33b9ff" />
-                        <Text style={styles.optionsText}>Edit Page</Text>
+                    <TouchableOpacity onPress={() => sendMessageHandler('Message')} style={styles.optionsContainer}>
+                        <Entypo name="message" size={20} color="#33b9ff" />
+                        <Text style={styles.optionsText}>SMS</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => DeleteMessageHandler()} style={styles.optionsContainer}>
-                        <MaterialIcons name="delete" size={20} color="#33b9ff" />
-                        <Text style={styles.optionsText}>Delete Page</Text>
+                    <TouchableOpacity onPress={() => sendMessageHandler('Email')} style={styles.optionsContainer}>
+                        <MaterialIcons name="email" size={20} color="#33b9ff" />
+                        <Text style={styles.optionsText}>Email</Text>
                     </TouchableOpacity>
                 </View>
             </BottomMaskPopUp>
@@ -197,4 +202,4 @@ const ViewPageScreen = ({ route, navigation }) => {
     )
 }
 
-export default ViewPageScreen
+export default SendPageScreen

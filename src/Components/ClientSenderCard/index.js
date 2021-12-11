@@ -22,6 +22,11 @@ const ClientSenderCard = ({ navigation, item, type, typeId }) => {
                 fileId:typeId, 
                 userId:item.id
             })
+        }else if(type==="content-page"){
+            navigation.navigate('SendPage',{
+                pageId:typeId, 
+                userId:item.id
+            })
         }
     }
 

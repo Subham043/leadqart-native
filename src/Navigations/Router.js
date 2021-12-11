@@ -18,6 +18,7 @@ import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import ViewMessageScreen from '../Screens/ViewMessage/index'
 import SendMessageScreen from '../Screens/SendMessage/index'
 import SendFileScreen from '../Screens/SendFile/index'
+import SendPageScreen from '../Screens/SendPage/index'
 import ViewFileScreen from '../Screens/ViewFile/index'
 import ViewPageScreen from '../Screens/ViewPage/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
@@ -32,7 +33,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../../axios"
 import { useDispatch, useSelector } from "react-redux"
 import { login, logout, selectUser } from "../../app/feature/userSlice"
-import { setRefreshToken, removeRefreshToken, selectRefreshToken } from "../../app/feature/refreshTokenSlice"
+import { setRefreshToken, removeRefreshToken } from "../../app/feature/refreshTokenSlice"
+import WebPage from '../Screens/WebPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -205,6 +207,11 @@ const Router = () => {
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen
+                                name="SendPage"
+                                component={SendPageScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
                                 name="ViewFile"
                                 component={ViewFileScreen}
                                 options={{ headerShown: false }}
@@ -241,6 +248,11 @@ const Router = () => {
                             <Stack.Group screenOptions={{ presentation: 'modal' }}>
                                 <Stack.Screen name="ActivityModal" component={ActivityModal} options={{ headerShown: false }} />
                                 <Stack.Screen name="ActivityEditModal" component={ActivityEditModal} options={{ headerShown: false }} />
+                                <Stack.Screen name="WebPage" component={WebPage} options={{
+                                    title: 'Content Page Preview', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }} />
                             </Stack.Group>
                         </> :
                         <>

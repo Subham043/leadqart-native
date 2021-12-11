@@ -5,8 +5,23 @@ import styles from './styles'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AccountScreenButton from '../../Components/AccountScreenButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "../../../axios"
+import { useDispatch, useSelector } from "react-redux"
+import { login, logout, selectUser } from "../../../app/feature/userSlice"
+import { setRefreshToken, removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 
 const AccountScreen = ({ navigation }) => {
+
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser)
+
+    const logoutHandler = async() => {
+        await AsyncStorage.removeItem('refreshToken')
+        dispatch(logout());
+        dispatch(removeRefreshToken());
+    }
+
     return (
         <SafeAreaView style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
@@ -42,7 +57,7 @@ const AccountScreen = ({ navigation }) => {
                 <AccountScreenButton leftText="Contact Us" />
             </View>
             <View style={styles.PreferenceMainContainer}>
-                <TouchableOpacity style={styles.logoutContainer}>
+                <TouchableOpacity style={styles.logoutContainer} onPress={() => logoutHandler()}>
                     <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
             </View>

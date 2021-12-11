@@ -38,13 +38,6 @@ const styles = StyleSheet.create({
         marginTop:10
     },
 
-    sendDetailContainer:{
-        width: '100%',
-        paddingHorizontal: 10,
-        paddingTop: 5,
-        paddingBottom: 5,
-    },
-
     detailContainer:{
         width: '100%',
         backgroundColor:'white',
@@ -64,14 +57,6 @@ const styles = StyleSheet.create({
         lineHeight:20,
         marginBottom:5,
         color: 'gray',
-    },
-
-    sendNameText:{
-        fontSize:15,
-        fontWeight: 'bold',
-        lineHeight:20,
-        marginBottom:5,
-        color: '#ffaa49',
     },
 
     bottomContainer: {
@@ -148,8 +133,6 @@ const styles = StyleSheet.create({
     },
 
     messageMainContainer:{
-        paddingHorizontal:10,
-        paddingVertical:5,
         width:'100%',
         height:80,
         borderBottomWidth:0.5,
@@ -159,7 +142,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    
+
     leftMainContainer:{
         width:'80%',
         height:'100%',
@@ -169,15 +152,23 @@ const styles = StyleSheet.create({
     },
 
     pdfContainer:{
-        width:'15%',
+        width:'25%',
         height:'100%',
         justifyContent: 'center',
         alignItems: 'flex-start',
     },
 
 
+    pdfImage:{
+        resizeMode: 'stretch',
+        width:'100%',
+        height:'100%',
+    },
+
+
     textContainer:{
-        width:'85%',
+        paddingLeft:10,
+        width:'75%',
         height:'100%',
         justifyContent: 'center',
         alignItems: 'flex-start',
@@ -186,6 +177,10 @@ const styles = StyleSheet.create({
     title:{
         fontWeight: 'bold',
         marginBottom:5
+    },
+
+    description:{
+        color:'black'
     },
 
     rightMainContainer:{
@@ -198,7 +193,24 @@ const styles = StyleSheet.create({
     previewText:{
         fontWeight: 'bold',
         color: '#ffaa49',
-    }
+        marginRight:10,
+    },
+
+    sendDetailContainer:{
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+    },
+
+    sendNameText:{
+        fontSize:15,
+        fontWeight: 'bold',
+        lineHeight:20,
+        marginBottom:5,
+        color: '#ffaa49',
+    },
+
 
 })
 
