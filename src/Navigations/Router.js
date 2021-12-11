@@ -25,6 +25,7 @@ import GroupsListScreen from '../Screens/GroupsList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import ClientSenderListScreen from '../Screens/ClientSenderList/index'
+import ContentSenderListScreen from '../Screens/ContentSenderList/index'
 import LoadingScreen from '../Screens/Loading/index'
 import ActivityModal from '../Screens/ActivityModal/index'
 import ActivityEditModal from '../Screens/ActivityEditModal/index'
@@ -241,6 +242,15 @@ const Router = () => {
                                 component={ClientSenderListScreen}
                                 options={{
                                     title: 'Select a client', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="ContentSenderList"
+                                component={ContentSenderListScreen}
+                                options={{
+                                    title: 'Select a content', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }}

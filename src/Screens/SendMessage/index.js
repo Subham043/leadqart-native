@@ -20,7 +20,7 @@ import qs from 'qs';
 const SendMessageScreen = ({ route,navigation }) => {
 
     const refRBSheet = useRef();
-    const {messageId,userId} = route.params;
+    const {messageId,itemId} = route.params;
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -40,7 +40,7 @@ const SendMessageScreen = ({ route,navigation }) => {
     useEffect(() => {
         loadMessageData();
         loadLeadData();
-    }, [messageId, userId, reload])
+    }, [messageId, itemId, reload])
 
     const loadMessageData = async () => {
         setShowLoader(true)
@@ -74,7 +74,7 @@ const SendMessageScreen = ({ route,navigation }) => {
     const loadLeadData = async () => {
         setShowLoader(true)
         try {
-            const resp = await axios.get(`/leads/view/${userId}`, {
+            const resp = await axios.get(`/leads/view/${itemId}`, {
                 headers: {
                     'authorization': 'bearer ' + user,
                 },

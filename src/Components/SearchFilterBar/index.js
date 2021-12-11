@@ -16,11 +16,11 @@ const SearchFilterBar = ({text, navigation}) => {
                     <Octicons name="search" size={25} color="#33b9ff" />
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.filterContainer}>
+            {/* <TouchableOpacity style={styles.filterContainer}>
                 <View>
                     <FontAwesome name="filter" size={25} color="#33b9ff" />
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     )
 }

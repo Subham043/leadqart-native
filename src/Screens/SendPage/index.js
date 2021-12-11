@@ -20,7 +20,7 @@ import qs from 'qs';
 const SendPageScreen = ({ route, navigation }) => {
 
     const refRBSheet = useRef();
-    const { pageId, userId } = route.params;
+    const { pageId, itemId } = route.params;
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -42,7 +42,7 @@ const SendPageScreen = ({ route, navigation }) => {
     useEffect(() => {
         loadFileData();
         loadLeadData();
-    }, [pageId, userId, reload])
+    }, [pageId, itemId, reload])
 
     const loadFileData = async () => {
         setShowLoader(true)
@@ -80,7 +80,7 @@ const SendPageScreen = ({ route, navigation }) => {
     const loadLeadData = async () => {
         setShowLoader(true)
         try {
-            const resp = await axios.get(`/leads/view/${userId}`, {
+            const resp = await axios.get(`/leads/view/${itemId}`, {
                 headers: {
                     'authorization': 'bearer ' + user,
                 },

@@ -20,7 +20,7 @@ import qs from 'qs';
 const SendFileScreen = ({ route, navigation }) => {
 
     const refRBSheet = useRef();
-    const { fileId, userId } = route.params;
+    const { fileId, itemId } = route.params;
     
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -39,7 +39,7 @@ const SendFileScreen = ({ route, navigation }) => {
     useEffect(() => {
         loadFileData();
         loadLeadData();
-    }, [fileId, userId, reload])
+    }, [fileId, itemId, reload])
 
     const loadFileData = async () => {
         setShowLoader(true)
@@ -73,7 +73,7 @@ const SendFileScreen = ({ route, navigation }) => {
     const loadLeadData = async () => {
         setShowLoader(true)
         try {
-            const resp = await axios.get(`/leads/view/${userId}`, {
+            const resp = await axios.get(`/leads/view/${itemId}`, {
                 headers: {
                     'authorization': 'bearer ' + user,
                 },

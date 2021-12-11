@@ -764,7 +764,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     </ScrollView>
                 </View>
                 <View style={styles.bottomContainer}>
-                    <TouchableOpacity style={styles.bottomButton}>
+                    <TouchableOpacity style={styles.bottomButton} onPress={() =>navigation.navigate('ContentSenderList',{leadId:leadDetail.id})}>
                         <Text style={styles.bottomButtonText}>QUICK RESPONSE</Text>
                     </TouchableOpacity>
                 </View>
