@@ -19,24 +19,23 @@ import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
 import { setReload } from "../../../app/feature/reloadSlice"
 
-const GroupsListScreen = ({ route, navigation }) => {
+const NewLeadListScreen = ({ route, navigation }) => {
 
     const refRBSheet = useRef();
     const { groupName, groupId } = route.params;
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
-    const [searchText, setSearchText] = useState("")
-    const [searchData, setSearchData] = React.useState([]);
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
     const [leadData, setLeadData] = React.useState([]);
-    const [groupData, setGroupData] = React.useState({});
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
+    const [searchText, setSearchText] = useState("")
+    const [searchData, setSearchData] = React.useState([]);
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -55,62 +54,15 @@ const GroupsListScreen = ({ route, navigation }) => {
         return () => mounted = false;
     }, [])
 
-    const deleteGroup = async () => {
-        refRBSheet.current.close()
-        setShowLoader(true)
-        try {
-            const resp = await axios.delete(`/groups/delete/${groupId}`, {
-                headers: {
-                    'authorization': 'bearer ' + user,
-                },
-            });
-            setShowLoader(false)
-            if (resp?.data?.message) {
-                console.log(resp?.data?.message);
-                setShowToasterMsg(resp?.data?.message)
-                setShowToaster(true)
-                setTimeout(() => {
-                    setShowToaster(false)
-                    dispatch(setReload(true));
-                    navigation.goBack()
-                }, 1000);
-            }
-
-            if (resp?.data?.rateLimit) {
-                setShowErrorToasterMsg(resp?.data?.rateLimit)
-                setShowErrorToaster(true)
-                setTimeout(() => {
-                    setShowErrorToaster(false)
-                }, 1000);
-            }
-
-            if (resp?.data?.error) {
-                console.log(resp?.data?.error);
-                if (resp?.data?.error === "Unauthorised") {
-                    await AsyncStorage.removeItem('accessToken')
-                    await AsyncStorage.removeItem('refreshToken')
-                    dispatch(logout());
-                    dispatch(removeRefreshToken());
-                    return;
-                }
-            }
-
-
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
     const getLeads = async () => {
         try {
-            const resp = await axios.get(`/groups/view/${groupId}`, {
+            const resp = await axios.get(`/leads/view-all/new-leads`, {
                 headers: {
                     'authorization': 'bearer ' + user,
                 },
             });
             if (resp?.data?.message) {
-                setGroupData({ ...resp?.data?.groups })
-                setLeadData([...resp?.data?.groups.leads])
+                setLeadData([...resp?.data?.leads])
                 setLoadng(false)
                 setRefreshing(false)
             }
@@ -161,9 +113,6 @@ const GroupsListScreen = ({ route, navigation }) => {
                         <MaterialIcons name="arrow-back" size={25} color="white" />
                     </TouchableOpacity>
                     <Text style={styles.backButtonText}>{groupName}</Text>
-                    <TouchableOpacity onPress={() => refRBSheet.current.open()} >
-                        <Text style={styles.backButtonText}>Options</Text>
-                    </TouchableOpacity>
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.searchInputContainer}>
@@ -188,24 +137,9 @@ const GroupsListScreen = ({ route, navigation }) => {
             <Loader status={showLoader} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
             <Toaster message={showToasterMsg} status={showToaster} />
-            <BottomMaskPopUp refRBSheet={refRBSheet} height={200}>
-                <View styles={styles.optionsMainContainer}>
-                    <View style={styles.optionsHeaderContainer}>
-                        <Text style={styles.optionsHeaderText}>Options</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
-                        <FontAwesome5 name="edit" size={18} color="#33b9ff" />
-                        <Text style={styles.optionsText}>Edit Group Details</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={deleteGroup} style={styles.optionsContainer}>
-                        <MaterialIcons name="delete" size={20} color="#33b9ff" />
-                        <Text style={styles.optionsText}>Delete Group</Text>
-                    </TouchableOpacity>
-                </View>
-            </BottomMaskPopUp>
 
         </SafeAreaView>
     )
 }
 
-export default GroupsListScreen
+export default NewLeadListScreen

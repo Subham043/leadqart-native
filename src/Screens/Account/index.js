@@ -46,7 +46,7 @@ const AccountScreen = ({ navigation }) => {
                     <Text style={styles.HeaderText}>Account Preferences</Text>
                 </View>
                 <AccountScreenButton leftText="Settings" />
-                <AccountScreenButton leftText="Integrations" />
+                <AccountScreenButton leftText="Integrations" link="Integration" navigation={navigation} />
                 <AccountScreenButton leftText="Subscription" rightText="ACTIVE" />
             </View>
             <View style={styles.PreferenceMainContainer}>

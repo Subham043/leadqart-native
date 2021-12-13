@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import styles from './styles'
 
-const AccountScreenButton = ({leftText,rightText}) => {
+const AccountScreenButton = ({leftText, rightText, link, navigation}) => {
     return (
-        <TouchableOpacity style={styles.PreferenceContainer}>
+        <TouchableOpacity style={styles.PreferenceContainer} onPress={()=>navigation.navigate(link)}>
             <View style={styles.leftContainer}>
                 <View style={styles.leftTextContainer}>
                     <Text style={styles.settingText}>{leftText}</Text>

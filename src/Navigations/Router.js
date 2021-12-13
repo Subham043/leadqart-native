@@ -9,6 +9,7 @@ import OtpScreen from '../Screens/Otp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
 import AddGroupScreen from '../Screens/AddGroup/index'
 import AddMessageScreen from '../Screens/AddMessage/index'
+import FacebookConfigurationScreen from '../Screens/FacebookConfiguration/index'
 import EditMessageScreen from '../Screens/EditMessage/index'
 import EditFileScreen from '../Screens/EditFile/index'
 import EditPageScreen from '../Screens/EditPage/index'
@@ -22,6 +23,7 @@ import SendPageScreen from '../Screens/SendPage/index'
 import ViewFileScreen from '../Screens/ViewFile/index'
 import ViewPageScreen from '../Screens/ViewPage/index'
 import GroupsListScreen from '../Screens/GroupsList/index'
+import NewLeadListScreen from '../Screens/NewLeadList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import ClientSenderListScreen from '../Screens/ClientSenderList/index'
@@ -29,6 +31,7 @@ import ContentSenderListScreen from '../Screens/ContentSenderList/index'
 import LoadingScreen from '../Screens/Loading/index'
 import ActivityModal from '../Screens/ActivityModal/index'
 import ActivityEditModal from '../Screens/ActivityEditModal/index'
+import IntegrationScreen from '../Screens/Integration/index'
 import BottomTab from '../Navigations/BottomTab'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../../axios"
@@ -143,6 +146,15 @@ const Router = () => {
                                 }}
                             />
                             <Stack.Screen
+                                name="FacebookConfiguration"
+                                component={FacebookConfigurationScreen}
+                                options={{
+                                    title: 'Facebook Configuration', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
                                 name="EditMessage"
                                 component={EditMessageScreen}
                                 options={{
@@ -188,6 +200,15 @@ const Router = () => {
                                 }}
                             />
                             <Stack.Screen
+                                name="Integration"
+                                component={IntegrationScreen}
+                                options={{
+                                    title: 'Integration', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
                                 name="FacebookLeadDetail"
                                 component={FacebookLeadDetailScreen}
                                 options={{ headerShown: false }}
@@ -225,6 +246,11 @@ const Router = () => {
                             <Stack.Screen
                                 name="GroupsList"
                                 component={GroupsListScreen}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="NewLeadList"
+                                component={NewLeadListScreen}
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen

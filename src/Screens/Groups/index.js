@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ScrollView, View, RefreshControl } from 'react-native'
 import GroupCard from '../../Components/GroupCard';
+import NewLeadCard from '../../Components/NewLeadCard';
 import styles from './styles'
 import { FloatingAction } from "react-native-floating-action";
 import { useDispatch, useSelector } from "react-redux"
@@ -17,6 +18,7 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
     const user = useSelector(selectUser)
     const reload = useSelector(selectReload)
     const [groupData, setGroupData] = React.useState([]);
+    const [newLeadData, setNewLeadData] = React.useState([]);
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
@@ -24,8 +26,10 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         setGroupData([])
+        setNewLeadData([])
         setLoadng(true)
         getGroups();
+        getNewLeads()
     }, []);
 
     useEffect(() => {
@@ -34,7 +38,9 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
             if (mounted) {
                 setLoadng(true)
                 setGroupData([])
+                setNewLeadData([])
                 getGroups();
+                getNewLeads()
                 dispatch(setReload(false));
                 return;
             }
@@ -42,7 +48,9 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
             if (mounted) {
                 setLoadng(true)
                 setGroupData([])
+                setNewLeadData([])
                 getGroups();
+                getNewLeads()
             }
         }
         return () => mounted = false;
@@ -57,6 +65,35 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
             });
             if (resp?.data?.message) {
                 setGroupData([...resp?.data?.groups])
+                setLoadng(false)
+                setRefreshing(false)
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+    }
+
+
+    const getNewLeads = async () => {
+        try {
+            const resp = await axios.get('/leads/view-all/new-leads', {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            // console.log(resp.data);
+            if (resp?.data?.message) {
+                setNewLeadData([...resp?.data?.leads])
                 setLoadng(false)
                 setRefreshing(false)
             }
@@ -93,7 +130,7 @@ const GroupsScreen = ({ navigation, tabIndexNumber }) => {
 
             <ScrollView style={styles.ScrollContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 {loading ? <GroupCardPlaceholder /> : null}
-                {groupData.length > 0 ? <GroupCard name="NEW LEADS" number="222" color="#33b9ff" navigation={navigation} /> : null}
+                {groupData.length > 0 ? <NewLeadCard name="NEW LEADS" number={newLeadData.length} color="#33b9ff" navigation={navigation} /> : null}
                 {groupData.map((item, index) => {
                     return (<GroupCard name={item.name} number={item.leads.length} color={item.color} id={item.id} key={index} navigation={navigation} />);
                 })}
