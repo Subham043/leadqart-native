@@ -11,12 +11,15 @@ import { logout, selectUser } from "../../../app/feature/userSlice"
 import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import axios from "../../../axios"
+import { useIsFocused } from "@react-navigation/native";
 
 const FollowUpScreen = ({ navigation }) => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
     const reload = useSelector(selectReload)
+
+    const isFocused = useIsFocused();
 
     const [getSomedayCount, setGetSomedayCount] = useState("")
     const [getTodayCount, setGetTodayCount] = useState("")
@@ -30,11 +33,19 @@ const FollowUpScreen = ({ navigation }) => {
     const [showToasterMsg, setShowToasterMsg] = useState("")
 
      useEffect(() => {
-        getCount('get-someday-count');
-        getCount('get-today-count');
-        getCount('get-overdue-count');
-        getCount('get-upcoming-count');
-     }, [navigation, reload])
+        if(isFocused){ 
+            getCount('get-someday-count');
+            getCount('get-today-count');
+            getCount('get-overdue-count');
+            getCount('get-upcoming-count');
+        }else{
+            getCount('get-someday-count');
+            getCount('get-today-count');
+            getCount('get-overdue-count');
+            getCount('get-upcoming-count');
+        }
+        
+     }, [navigation, reload, isFocused])
 
      const getCount = async (type) => {
         setShowLoader(true)
