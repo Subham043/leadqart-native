@@ -58,9 +58,10 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
                 },
             });
             if (resp?.data?.message) {
-                setLeadData([...resp?.data?.leads])
-                setLoadng(false)
-                setRefreshing(false)
+                // setLeadData([...resp?.data?.leads])
+                // setLoadng(false)
+                // setRefreshing(false)
+                attachLeads(resp?.data?.leads).then((resp) => {})
             }
 
             if (resp?.data?.error) {
@@ -76,6 +77,15 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
 
 
         } catch (e) { console.log(e) }
+    }
+
+    const attachLeads = (leads) => {
+        return new Promise((resolve, reject)=>{
+            setLeadData([...leads])
+            setLoadng(false)
+            setRefreshing(false)
+            resolve('done')
+        })
     }
 
     return (

@@ -66,9 +66,11 @@ const Router = () => {
             });
             if (response?.data?.message) {
                 if (mounted) {
-                    storeDataAsync("refreshToken", response?.data.refreshToken);
-                    dispatch(login(response?.data.accessToken));
-                    dispatch(setRefreshToken(response?.data.refreshToken));
+                    setUserRedux(response?.data.accessToken, response?.data.refreshToken)
+                    .then((resp)=>{})
+                    // storeDataAsync("refreshToken", response?.data.refreshToken);
+                    // dispatch(login(response?.data.accessToken));
+                    // dispatch(setRefreshToken(response?.data.refreshToken));
                 }
             }
 
@@ -93,6 +95,15 @@ const Router = () => {
 
         return () => mounted = false;
     }, [refreshToken])
+
+    const setUserRedux = (accessToken, refreshToken) => {
+        return new Promise((resolve, reject) => {
+            storeDataAsync("refreshToken", refreshToken);
+            dispatch(login(accessToken));
+            dispatch(setRefreshToken(refreshToken));
+            resolve("done")
+        })
+    }
 
     const getDataAsync = async (key) => {
         try {
