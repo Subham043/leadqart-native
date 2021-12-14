@@ -32,7 +32,6 @@ const FollowUpScreen = ({ navigation }) => {
         getCount('get-today-count');
         getCount('get-overdue-count');
         getCount('get-upcoming-count');
-        random()
      }, [navigation])
 
      const getCount = async (type) => {
@@ -76,54 +75,13 @@ const FollowUpScreen = ({ navigation }) => {
         setShowLoader(false)
     }
 
-    const random = async (type) => {
-        setShowLoader(true)
-        try {
-            const resp = await axios.get(`/follow-up/get-overdue`, {
-                headers: {
-                    'authorization': 'bearer ' + user,
-                },
-            });
-            console.log(resp?.data);
-            // if (resp?.data?.message) {
-            //     if(type=="get-someday-count"){
-            //         setGetSomedayCount(resp?.data?.count)
-            //     }
-            //     if(type=="get-today-count"){
-            //         setGetTodayCount(resp?.data?.count)
-            //     }
-            //     if(type=="get-overdue-count"){
-            //         setGetOverdueCount(resp?.data?.count)
-            //     }
-            //     if(type=="get-upcoming-count"){
-            //         setGetUpcomingCount(resp?.data?.count)
-            //     }
-                
-            // }
-
-            if (resp?.data?.error) {
-                console.log(resp?.data?.error);
-                if (resp?.data?.error === "Unauthorised") {
-                    await AsyncStorage.removeItem('accessToken')
-                    await AsyncStorage.removeItem('refreshToken')
-                    dispatch(logout());
-                    dispatch(removeRefreshToken());
-                    return;
-                }
-            }
-
-
-        } catch (e) { console.log(e) }
-        setShowLoader(false)
-    }
-
     return (
         <SafeAreaView style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
-            <FollowCard name="OVERDUE" imageUri={require("../../../assets/images/overdue.png")} number={getOverdueCount} navigation={navigation} />
-            <FollowCard name="UPCOMING" imageUri={require("../../../assets/images/upcoming.png")} number={getUpcomingCount} navigation={navigation}  />
-            <FollowCard name="SOMEDAY" imageUri={require("../../../assets/images/someday.png")} number={getSomedayCount} navigation={navigation}  />
-            <FollowCard name="TODAY" imageUri={require("../../../assets/images/today.png")} number={getTodayCount} navigation={navigation}  />
+            <FollowCard name="OVERDUE" imageUri={require("../../../assets/images/overdue.png")} number={getOverdueCount} navigation={navigation} loadData="get-overdue" />
+            <FollowCard name="UPCOMING" imageUri={require("../../../assets/images/upcoming.png")} number={getUpcomingCount} navigation={navigation} loadData="get-upcoming"  />
+            <FollowCard name="SOMEDAY" imageUri={require("../../../assets/images/someday.png")} number={getSomedayCount} navigation={navigation} loadData="get-someday"  />
+            <FollowCard name="TODAY" imageUri={require("../../../assets/images/today.png")} number={getTodayCount} navigation={navigation} loadData="get-today"  />
             <Loader status={showLoader} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
             <Toaster message={showToasterMsg} status={showToaster} />

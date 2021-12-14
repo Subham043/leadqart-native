@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, Image } from 'react-native'
 import styles from './styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const FollowCard = ({ name,imageUri, number, navigation }) => {
+const FollowCard = ({ name,imageUri, number, loadData, navigation }) => {
 
     return (
         <TouchableOpacity onPress={()=>navigation.navigate('FollowUpList', {
             followUpName: name,
+            loadData
           })} style={styles.messageMainContainer}>
             <View style={styles.leftMainContainer}>
                 <View style={styles.pdfContainer}>
