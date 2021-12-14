@@ -12,12 +12,12 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
-import { setReload } from "../../../app/feature/reloadSlice"
 
 const GroupsListScreen = ({ route, navigation }) => {
 
@@ -25,6 +25,7 @@ const GroupsListScreen = ({ route, navigation }) => {
     const { groupName, groupId } = route.params;
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const reload = useSelector(selectReload)
     const [searchText, setSearchText] = useState("")
     const [searchData, setSearchData] = React.useState([]);
 
@@ -53,7 +54,7 @@ const GroupsListScreen = ({ route, navigation }) => {
             getLeads();
         }
         return () => mounted = false;
-    }, [])
+    }, [reload])
 
     const deleteGroup = async () => {
         refRBSheet.current.close()

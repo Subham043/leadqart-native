@@ -104,11 +104,13 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 },
             });
             if (resp?.data?.message) {
-                setFollowChecked(resp?.data?.followUps.type)
+                if(resp?.data?.followUps!=null){
+                    setFollowChecked(resp?.data?.followUps.type)
+                }
             }
 
             if (resp?.data?.error) {
-                console.log(resp?.data?.error);
+                // console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
                     await AsyncStorage.removeItem('accessToken')
                     await AsyncStorage.removeItem('refreshToken')
@@ -138,7 +140,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
             }
 
             if (resp?.data?.error) {
-                console.log(resp?.data?.error);
+                // console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
                     await AsyncStorage.removeItem('accessToken')
                     await AsyncStorage.removeItem('refreshToken')
@@ -166,7 +168,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
             }
 
             if (resp?.data?.error) {
-                console.log(resp?.data?.error);
+                // console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
                     await AsyncStorage.removeItem('accessToken')
                     await AsyncStorage.removeItem('refreshToken')
@@ -242,7 +244,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
             }
 
             if (resp?.data?.error) {
-                console.log(resp?.data?.error);
+                // console.log(resp?.data?.error);
                 if (resp?.data?.error === "Unauthorised") {
                     await AsyncStorage.removeItem('accessToken')
                     await AsyncStorage.removeItem('refreshToken')
@@ -649,6 +651,54 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         showMode('date');
     };
 
+    const deleteLeadHandler = async() => {
+        setShowLoader(true)
+        refRBSheet.current.close()
+        try {
+            const response = await axios.delete(`leads/delete/${leadId}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            // console.log(response.data);
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                    dispatch(setReload(true));
+                    navigation.goBack();
+                }, 1000);
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+        setShowLoader(false)
+    }
+
 
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
@@ -778,11 +828,11 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         <MaterialIcons name="group-add" size={20} color="#33b9ff" />
                         <Text style={styles.optionsText}>Add to Groups</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                    {/* <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
                         <FontAwesome5 name="user-check" size={18} color="#33b9ff" />
                         <Text style={styles.optionsText}>Mark as New Lead</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                    </TouchableOpacity> */}
+                    <TouchableOpacity onPress={() => deleteLeadHandler()} style={styles.optionsContainer}>
                         <MaterialIcons name="delete" size={20} color="#33b9ff" />
                         <Text style={styles.optionsText}>Delete Lead</Text>
                     </TouchableOpacity>

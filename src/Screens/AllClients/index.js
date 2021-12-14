@@ -8,11 +8,13 @@ import { logout, selectUser } from "../../../app/feature/userSlice"
 import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 
 const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const reload = useSelector(selectReload)
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
     const [leadData, setLeadData] = React.useState([]);
@@ -42,7 +44,7 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
             }
         }
         return () => mounted = false;
-    }, [tabIndexNumber])
+    }, [tabIndexNumber, reload])
 
     const getLeads = async () => {
         try {

@@ -14,12 +14,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toaster from '../../Components/Toaster'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
+import { setReload, selectReload } from "../../../app/feature/reloadSlice"
+
 
 const FollowUpListScreen = ({ route, navigation }) => {
-
     const { followUpName, loadData } = route.params;
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const reload = useSelector(selectReload)
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoadng] = React.useState(true);
@@ -47,7 +49,7 @@ const FollowUpListScreen = ({ route, navigation }) => {
             getLeads();
         }
         return () => mounted = false;
-    }, [])
+    }, [followUpName, loadData, navigation, reload])
 
     const getLeads = async () => {
         try {

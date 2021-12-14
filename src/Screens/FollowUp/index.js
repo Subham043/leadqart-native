@@ -9,12 +9,14 @@ import ErrorToaster from '../../Components/ErrorToaster'
 import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import axios from "../../../axios"
 
 const FollowUpScreen = ({ navigation }) => {
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
+    const reload = useSelector(selectReload)
 
     const [getSomedayCount, setGetSomedayCount] = useState("")
     const [getTodayCount, setGetTodayCount] = useState("")
@@ -32,7 +34,7 @@ const FollowUpScreen = ({ navigation }) => {
         getCount('get-today-count');
         getCount('get-overdue-count');
         getCount('get-upcoming-count');
-     }, [navigation])
+     }, [navigation, reload])
 
      const getCount = async (type) => {
         setShowLoader(true)
