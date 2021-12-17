@@ -14,7 +14,9 @@ import EditMessageScreen from '../Screens/EditMessage/index'
 import EditFileScreen from '../Screens/EditFile/index'
 import EditPageScreen from '../Screens/EditPage/index'
 import AddFileScreen from '../Screens/AddFile/index'
+import ImportLeadScreen from '../Screens/ImportLead/index'
 import AddPageScreen from '../Screens/AddPage/index'
+import AddLeadScreen from '../Screens/AddLead/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
 import ViewMessageScreen from '../Screens/ViewMessage/index'
 import SendMessageScreen from '../Screens/SendMessage/index'
@@ -202,10 +204,28 @@ const Router = () => {
                                 }}
                             />
                             <Stack.Screen
+                                name="ImportLead"
+                                component={ImportLeadScreen}
+                                options={{
+                                    title: 'Import Lead', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
                                 name="AddPage"
                                 component={AddPageScreen}
                                 options={{
                                     title: 'Add Page', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AddLead"
+                                component={AddLeadScreen}
+                                options={{
+                                    title: 'Add Lead', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }}

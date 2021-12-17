@@ -28,14 +28,14 @@ const AllClientCard = ({ navigation, item }) => {
                             {item.newLead===1 ?
                             <SimpleLineIcons name="badge" size={30} color="#ffa200" /> : null }
                         </View>
-                        <Text style={styles.description} numberOfLines={2}>Facebook Lead via {(item.facebookPage).length!=0?item.facebookPage:item.leadSource}, Campaign: {(item.adset).length!=0?item.adset:item.ad}, Ad-set</Text>
+                        <Text style={styles.description} numberOfLines={2}>Facebook Lead via {(item.facebookPage)!=null?item.facebookPage:item.leadSource}, Campaign: {(item.adset)!=null?item.adset:item.ad}, Ad-set</Text>
                     </View>
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.leftContainer}>
                         <View style={styles.bottomTextContainer}>
                             <EvilIcons name="sc-facebook" size={20} color="#fff" />
-                            <Text style={styles.bottomText}>{(item.facebookPage).length!=0?item.facebookPage:item.leadSource}</Text>
+                            <Text style={styles.bottomText}>{(item.facebookPage)!=null?item.facebookPage:item.leadSource}</Text>
                         </View>
                     </View>
                     <View style={styles.rightContainer}>
