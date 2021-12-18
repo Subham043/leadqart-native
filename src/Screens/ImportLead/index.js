@@ -41,7 +41,7 @@ const ImportLeadScreen = ({ navigation }) => {
             }
 
             switch (file.mimeType) {
-                case 'text/csv':
+                case 'text/comma-separated-values':
                     break;
                 case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
                     break;
@@ -50,7 +50,8 @@ const ImportLeadScreen = ({ navigation }) => {
             
                 default:
                     setUploadError(true)
-                    setUploadErrorValue('Please select a csv/xlsx/xlsx/xlx/excel file')
+                    // setUploadErrorValue('Please select a csv/xlsx/xlsx/xlx/excel file')
+                    setUploadErrorValue(file.mimeType)
                     return;
                     break;
             }
@@ -83,7 +84,6 @@ const ImportLeadScreen = ({ navigation }) => {
             return;
         } else {
             setShowLoader(true)
-            getTokens();
             try {
                 const data = new FormData();
                 let fileData = {
@@ -144,36 +144,6 @@ const ImportLeadScreen = ({ navigation }) => {
             }
         }
 
-    }
-
-    const getTokens = async () => {
-        if (rToken !== null || rToken !== undefined) {
-            const response = await axios.get('/refresh-token', {
-                headers: {
-                    'refreshtoken': rToken,
-                },
-            });
-            if (response?.data?.message) {
-                storeDataAsync("accessToken", response?.data.accessToken);
-                storeDataAsync("refreshToken", response?.data.refreshToken);
-                dispatch(login(response?.data.accessToken));
-                dispatch(setRefreshToken(response?.data.refreshToken));
-            }
-
-            if (response?.data?.error) {
-                // console.log(response?.data?.error);
-                await AsyncStorage.removeItem('accessToken')
-                await AsyncStorage.removeItem('refreshToken')
-                dispatch(logout());
-                dispatch(removeRefreshToken());
-            }
-        } else {
-            await AsyncStorage.removeItem('accessToken')
-            await AsyncStorage.removeItem('refreshToken')
-            dispatch(logout());
-            dispatch(removeRefreshToken());
-            return;
-        }
     }
 
     const storeDataAsync = async (key, value) => {

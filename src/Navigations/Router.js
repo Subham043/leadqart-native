@@ -6,6 +6,7 @@ import LoginScreen from '../Screens/Login/index'
 import RegisterScreen from '../Screens/Register/index'
 import ForgotPasswordScreen from '../Screens/ForgotPassword/index'
 import OtpScreen from '../Screens/Otp/index'
+import LoginOtpScreen from '../Screens/LoginOtp/index'
 import ResetPasswordScreen from '../Screens/ResetPassword/index'
 import AddGroupScreen from '../Screens/AddGroup/index'
 import AddMessageScreen from '../Screens/AddMessage/index'
@@ -358,6 +359,15 @@ const Router = () => {
                             <Stack.Screen
                                 name="OTP"
                                 component={OtpScreen}
+                                options={{
+                                    title: 'Verification', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="LoginOtp"
+                                component={LoginOtpScreen}
                                 options={{
                                     title: 'Verification', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',

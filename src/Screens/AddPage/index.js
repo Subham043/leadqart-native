@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Text, TouchableOpacity, View, TextInput, ScrollView, Pressable, Keyboard, Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import styles from './styles'
@@ -11,6 +11,7 @@ import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux"
 import Toaster from '../../Components/Toaster'
+
 
 const AddPageScreen = ({ navigation }) => {
 
@@ -64,11 +65,13 @@ const AddPageScreen = ({ navigation }) => {
             setDescriptionError(true)
             setDescriptionErrorValue('Please enter page description')
             return;
-        } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
-            setDescriptionError(true)
-            setDescriptionErrorValue('Please enter a valid page description')
-            return;
-        } else {
+        } 
+        // else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
+        //     setDescriptionError(true)
+        //     setDescriptionErrorValue('Please enter a valid page description')
+        //     return;
+        // } 
+        else {
             setDescriptionError(false)
             setDescriptionErrorValue('')
         }
@@ -127,7 +130,7 @@ const AddPageScreen = ({ navigation }) => {
                     break;
                 case 'image/jpeg':
                     break;
-            
+
                 default:
                     setImageError(true)
                     setImageErrorValue('Please select an image')
@@ -194,7 +197,7 @@ const AddPageScreen = ({ navigation }) => {
             setImageErrorValue('')
         }
 
-        if (titleError || descriptionError || mapError || youtubeVideoError  || imageError) {
+        if (titleError || descriptionError || mapError || youtubeVideoError || imageError) {
             return;
         } else {
             setShowLoader(true)
@@ -206,7 +209,7 @@ const AddPageScreen = ({ navigation }) => {
                     type: filetype,
                     name: filename
                 };
-                data.append('image',fileData);
+                data.append('image', fileData);
                 data.append('title', title);
                 data.append('description', description);
                 data.append('map', map);
@@ -342,6 +345,7 @@ const AddPageScreen = ({ navigation }) => {
                         {descriptionError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{descriptionErrorValue}</Text> : null}
                         <View style={styles.inputTextAreaContainer}>
                             <TextInput placeholder="Enter page description" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={descriptionError ? "red" : "#ccc"} onChangeText={text => descriptionHandler(text)} defaultValue={description} />
+
                         </View>
                     </View>
                     <View style={styles.inputGroupContainer}>

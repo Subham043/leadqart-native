@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   modalView: {
     backgroundColor: '#eee',
     width: '100%',
-    height: Dimensions.get('window').height - 50,
+    height: Dimensions.get('window').height - 90,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 15,
@@ -90,6 +90,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: 90,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+
+  inputTextAreaBigContainer: {
+    backgroundColor: '#fff',
+    borderBottomColor: "gray",
+    borderBottomWidth: 0.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    height: 150,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },

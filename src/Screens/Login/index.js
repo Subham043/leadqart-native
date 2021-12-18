@@ -21,9 +21,9 @@ const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("")
     const [emailErrorValue, setEmailErrorValue] = useState("")
     const [emailError, setEmailError] = useState(false)
-    const [password, setPassword] = useState("")
-    const [passwordErrorValue, setPasswordErrorValue] = useState("")
-    const [passwordError, setPasswordError] = useState(false)
+    // const [password, setPassword] = useState("")
+    // const [passwordErrorValue, setPasswordErrorValue] = useState("")
+    // const [passwordError, setPasswordError] = useState(false)
 
     const emailHandler = (text) => {
         setEmail(text);
@@ -41,21 +41,21 @@ const LoginScreen = ({ navigation }) => {
         }
     }
 
-    const passwordHandler = (text) => {
-        setPassword(text);
-        if (text == '') {
-            setPasswordError(true)
-            setPasswordErrorValue('Please enter your password')
-            return;
-        } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
-            setPasswordError(true)
-            setPasswordErrorValue('Please enter a valid password')
-            return;
-        } else {
-            setPasswordError(false)
-            setPasswordErrorValue('')
-        }
-    }
+    // const passwordHandler = (text) => {
+    //     setPassword(text);
+    //     if (text == '') {
+    //         setPasswordError(true)
+    //         setPasswordErrorValue('Please enter your password')
+    //         return;
+    //     } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
+    //         setPasswordError(true)
+    //         setPasswordErrorValue('Please enter a valid password')
+    //         return;
+    //     } else {
+    //         setPasswordError(false)
+    //         setPasswordErrorValue('')
+    //     }
+    // }
 
     const signIn = async () => {
 
@@ -68,27 +68,31 @@ const LoginScreen = ({ navigation }) => {
             setEmailErrorValue('')
         }
 
-        if (password == '') {
-            setPasswordError(true)
-            setPasswordErrorValue('Please enter your password')
-            return;
-        } else {
-            setPasswordError(false)
-            setPasswordErrorValue('')
-        }
+        // if (password == '') {
+        //     setPasswordError(true)
+        //     setPasswordErrorValue('Please enter your password')
+        //     return;
+        // } else {
+        //     setPasswordError(false)
+        //     setPasswordErrorValue('')
+        // }
 
-        if (emailError || passwordError) {
+        if (emailError) {
             return ;
         } else {
             setShowLoader(true)
             try {
-                const response = await axios.post('/login', { email, password },);
+                const response = await axios.post('/login', { email },);
                 setShowLoader(false)
                 if(response?.data?.message){
-                    storeDataAsync("accessToken",response?.data.accessToken);
-                    storeDataAsync("refreshToken",response?.data.refreshToken);
-                    dispatch(setRefreshToken(response?.data.refreshToken));
-                    dispatch(login(response?.data.accessToken));
+                    navigation.navigate('LoginOtp', {
+                        id: response.data.id,
+                        msg: response.data.message,
+                      });
+                    // storeDataAsync("accessToken",response?.data.accessToken);
+                    // storeDataAsync("refreshToken",response?.data.refreshToken);
+                    // dispatch(setRefreshToken(response?.data.refreshToken));
+                    // dispatch(login(response?.data.accessToken));
                     // navigation.navigate('Main');
                 }
 
@@ -113,10 +117,10 @@ const LoginScreen = ({ navigation }) => {
                     setEmailErrorValue(response?.data?.errors?.email.msg)
                 }
 
-                if (response?.data?.errors?.password) {
-                    setPasswordError(true)
-                    setPasswordErrorValue(response?.data?.errors?.password?.msg)
-                }
+                // if (response?.data?.errors?.password) {
+                //     setPasswordError(true)
+                //     setPasswordErrorValue(response?.data?.errors?.password?.msg)
+                // }
                 
             } catch (error) {
                 setShowLoader(false)
@@ -151,12 +155,12 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={styles.label}>Email</Text>
                     <TextInput style={emailError ? { ...styles.input, borderColor: 'red', color: 'red' } : styles.input} placeholder="Email" placeholderTextColor={emailError ? "red" : "#ccc"} onChangeText={text => emailHandler(text)} defaultValue={email} />
                     {emailError ? <Text style={styles.error}>{emailErrorValue}</Text> : null}
-                    <Text style={styles.label}>Password</Text>
+                    {/* <Text style={styles.label}>Password</Text>
                     <TextInput style={passwordError ? { ...styles.input, borderColor: 'red', color: 'red' } : styles.input} placeholder="Password" placeholderTextColor={passwordError ? "red" : "#ccc"} secureTextEntry={true} onChangeText={text => passwordHandler(text)} defaultValue={password} />
-                    {passwordError ? <Text style={styles.error}>{passwordErrorValue}</Text> : null}
-                    <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                    {passwordError ? <Text style={styles.error}>{passwordErrorValue}</Text> : null} */}
+                    {/* <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                         <Text style={styles.forgotBtn}>Forgot Password?</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity onPress={signIn}>
                         <Text style={styles.signInBtn}>Sign in</Text>
                     </TouchableOpacity>

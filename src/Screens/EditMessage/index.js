@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Text, TouchableOpacity, View, TextInput, ScrollView, Keyboard, } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Text, TouchableOpacity, View, TextInput, ScrollView, Keyboard, Pressable } from 'react-native';
 import styles from './styles'
 import Loader from '../../Components/Loader'
 import ErrorToaster from '../../Components/ErrorToaster'
@@ -10,6 +10,8 @@ import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux"
 import Toaster from '../../Components/Toaster'
+import { MarkdownEditor } from 'react-native-markdown-editor';
+import * as DocumentPicker from 'expo-document-picker';
 
 const EditMessageScreen = ({ navigation, route }) => {
 
@@ -26,11 +28,18 @@ const EditMessageScreen = ({ navigation, route }) => {
     const [messageErrorValue, setMessageErrorValue] = useState("")
     const [messageError, setMessageError] = useState(false)
 
+    const [image, setImage] = useState("")
+    const [filename, setFilename] = useState("Select a image file")
+    const [filetype, setFiletype] = useState("")
+    const [imageErrorValue, setImageErrorValue] = useState("")
+    const [imageError, setImageError] = useState(false)
+
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
+
 
     const titleHandler = (text) => {
         setTitle(text);
@@ -54,15 +63,51 @@ const EditMessageScreen = ({ navigation, route }) => {
             setMessageError(true)
             setMessageErrorValue('Please enter message template')
             return;
-        } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
-            setMessageError(true)
-            setMessageErrorValue('Please enter a valid message template')
-            return;
         } else {
             setMessageError(false)
             setMessageErrorValue('')
         }
     }
+
+    const _pickDocument = async () => {
+        try {
+            const file = await DocumentPicker.getDocumentAsync({});
+            if (file.type === 'cancel') {
+                setImageError(true)
+                setImageErrorValue('Please select an image')
+                return;
+            }
+
+            // if (file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf') {
+            //     setImageError(true)
+            //     setImageErrorValue('Please select an image')
+            //     return;
+            // }
+            switch (file.mimeType) {
+                case 'image/png':
+                    break;
+                case 'image/jpg':
+                    break;
+                case 'image/jpeg':
+                    break;
+
+                default:
+                    setImageError(true)
+                    setImageErrorValue('Please select an image')
+                    return;
+                    break;
+            }
+
+            setImageError(false)
+            setImageErrorValue('')
+            setFilename(file.name);
+            setFiletype(file.mimeType);
+            setImage(Platform.OS === 'android' ? file.uri : file.uri.replace('file://', ''));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     const createMessage = async () => {
 
@@ -86,13 +131,31 @@ const EditMessageScreen = ({ navigation, route }) => {
             setMessageErrorValue('')
         }
 
-        if (titleError || messageError) {
+        if (image == '') {
+            setImageError(true)
+            setImageErrorValue('Please select a image')
+            return;
+        } else {
+            setImageError(false)
+            setImageErrorValue('')
+        }
+
+        if (titleError || messageError || imageError) {
             return;
         } else {
             setShowLoader(true)
             getTokens();
             try {
-                const response = await axios.post(`/content-message/edit/${id}`, { title, message }, {
+                const data = new FormData();
+                let fileData = {
+                    uri: image,
+                    type: filetype,
+                    name: filename
+                };
+                data.append('image', fileData);
+                data.append('title', title);
+                data.append('message', message);
+                const response = await axios.post(`/content-message/edit/${id}`, data, {
                     headers: {
                         'authorization': 'bearer ' + user,
                     },
@@ -140,6 +203,11 @@ const EditMessageScreen = ({ navigation, route }) => {
                 if (response?.data?.errors?.message) {
                     setMessageError(true)
                     setMessageErrorValue(response?.data?.errors?.message?.msg)
+                }
+
+                if (response?.data?.errors?.image) {
+                    setImageError(true)
+                    setImageErrorValue(response?.data?.errors?.image?.msg)
                 }
 
             } catch (error) {
@@ -203,10 +271,19 @@ const EditMessageScreen = ({ navigation, route }) => {
                         </View>
                     </View>
                     <View style={styles.inputGroupContainer}>
+                        <Text style={styles.label}>Image</Text>
+                        {imageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{imageErrorValue}</Text> : null}
+                        <Pressable onPress={() => _pickDocument()} style={styles.inputFileContainer}>
+                            <Text style={styles.inputText}>{filename}</Text>
+                            <Text style={styles.uploadText}>UPLOAD</Text>
+                        </Pressable>
+                    </View>
+                    <View style={styles.inputGroupContainer}>
                         <Text style={styles.label}>Message Template</Text>
                         {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}
                         <View style={styles.inputTextAreaContainer}>
-                            <TextInput placeholder="Enter message template" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} defaultValue={message} />
+                            {/* <TextInput placeholder="Enter message template" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} defaultValue={message} /> */}
+                            <MarkdownEditor onMarkdownChange={text => messageHandler(text)} />
                         </View>
                     </View>
                 </ScrollView>

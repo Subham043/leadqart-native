@@ -181,6 +181,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#ffaa49',
         marginRight:10,
+    },
+    htmlview:{
+        height:20
     }
 
 

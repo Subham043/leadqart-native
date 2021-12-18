@@ -352,6 +352,13 @@ const styles = StyleSheet.create({
         paddingVertical:5,
         alignItems: 'center',
     },
+    logActivityIconContainer:{
+        width:'100%',
+        height:'55%',
+        paddingHorizontal:10,
+        paddingVertical:5,
+        alignItems: 'center',
+    },
 
     logText:{
         fontSize:20,
@@ -361,6 +368,12 @@ const styles = StyleSheet.create({
     },
     logBtnContainer:{
         width:'100%',
+        paddingHorizontal:10,
+        paddingVertical:5,
+    },
+    logActivityBtnContainer:{
+        width:'100%',
+        height:'30%',
         paddingHorizontal:10,
         paddingVertical:5,
     },
@@ -385,7 +398,65 @@ const styles = StyleSheet.create({
     logBtnText:{
         fontWeight: 'bold',
         color:'#fff'
-    }
+    },
+
+    leadHeaderRow:{
+        flexDirection: 'row',
+        alignItems:'center',
+        justifyContent: 'space-between'
+    },
+    leadStatusContainer:{
+        paddingHorizontal:5,
+        paddingVertical:5,
+        borderWidth:1,
+        borderRadius:5
+    },
+    leadStatusText:{
+        color:'#ffa200'
+    },
+
+    inputGroupContainer: {
+        width: '100%',
+      },
+    
+      inputContainer: {
+        backgroundColor: '#fff',
+        borderBottomColor: "gray",
+        borderBottomWidth: 0.5,
+        alignItems: 'flex-start',
+        width: '100%',
+        height: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+      },
+    
+      label: {
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        fontWeight: 'bold',
+      },
+    
+      input: {
+        width: '100%',
+        height: '100%',
+      },
+    
+      inputTextAreaBigContainer: {
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        height: 120,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+      },
+
+      textAreaActivity: {
+        textAlignVertical: 'top',
+        width: '100%',
+        height: '100%',
+      },
 })
 
 

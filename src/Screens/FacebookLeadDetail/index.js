@@ -14,7 +14,7 @@ import { logout, selectUser } from "../../../app/feature/userSlice"
 import axios from "../../../axios"
 import GroupSelectionPlaceholder from '../../Components/GroupSelectionPlaceholder'
 import Toaster from '../../Components/Toaster'
-import Loader from '../../Components/Loader'
+import FacebookLoader from '../../Components/FacebookLoader'
 import ErrorToaster from '../../Components/ErrorToaster'
 import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -29,6 +29,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const refGroup = useRef();
     const refActivity = useRef();
     const refFollow = useRef();
+    const refLeadStatus = useRef();
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -47,6 +48,11 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
     const [activityData, setActivityData] = React.useState([]);
     const [activityObject, setActivityObject] = React.useState({});
     const [followChecked, setFollowChecked] = useState("NEVER")
+    const [leadStatusChecked, setLeadStatusChecked] = useState(1)
+
+    const [activityDescription, setActivityDescription] = useState("")
+    const [activityDescriptionErrorValue, setActivityDescriptionErrorValue] = useState("")
+    const [activityDescriptionError, setActivityDescriptionError] = useState(false)
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -104,7 +110,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 },
             });
             if (resp?.data?.message) {
-                if(resp?.data?.followUps!=null){
+                if (resp?.data?.followUps != null) {
                     setFollowChecked(resp?.data?.followUps.type)
                 }
             }
@@ -135,6 +141,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
             });
             if (resp?.data?.message) {
                 setLeadDetail(resp?.data?.leads)
+                setLeadStatusChecked(resp?.data?.leads?.newLead)
                 setLeadGroupData(resp?.data?.leads.groups)
                 setNoteText(resp?.data?.leads.notes === null ? "" : resp?.data?.leads.notes)
             }
@@ -395,6 +402,8 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         try {
             const response = await axios.post(`/activity/create/${leadId}`, {
                 type: activityLogType,
+                description:activityDescription,
+                timestamp: new Date()
             }, {
                 headers: {
                     'authorization': 'bearer ' + user,
@@ -548,40 +557,40 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         setShowLoader(false)
     }
 
-    const ActivityEditHandler = () =>{
+    const ActivityEditHandler = () => {
         refActivity.current.close()
-        navigation.navigate('ActivityEditModal',{activity:activityObject, name:leadDetail.name})
+        navigation.navigate('ActivityEditModal', { activity: activityObject, name: leadDetail.name })
     }
 
-    const followCheckBoxHandler = async (value) =>{
+    const followCheckBoxHandler = async (value) => {
         setFollowChecked(value);
         setShowLoader(true)
         refFollow.current.close()
-        if(value==="SOMEDAY"){
+        if (value === "SOMEDAY") {
             updateFollowUp({
-                type:"SOMEDAY",
-                description:null,
-                timestamp:null
+                type: "SOMEDAY",
+                description: null,
+                timestamp: null
             })
-        }else if(value==="TODAY"){
+        } else if (value === "TODAY") {
             updateFollowUp({
-                type:"TODAY",
-                description:null,
-                timestamp:new Date()
+                type: "TODAY",
+                description: null,
+                timestamp: new Date()
             })
-        }else if(value==="TOMORROW"){
+        } else if (value === "TOMORROW") {
             updateFollowUp({
-                type:"TOMORROW",
-                description:null,
-                timestamp:new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+                type: "TOMORROW",
+                description: null,
+                timestamp: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
             })
-        }else if(value==="CUSTOM"){
+        } else if (value === "CUSTOM") {
             showDatepicker()
-        }else if(value==="NEVER"){
+        } else if (value === "NEVER") {
             updateFollowUp({
-                type:"NEVER",
-                description:null,
-                timestamp:null
+                type: "NEVER",
+                description: null,
+                timestamp: null
             })
         }
     }
@@ -636,9 +645,9 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         setShowDateTime(Platform.OS === 'ios');
         setDate(currentDate);
         updateFollowUp({
-            type:"CUSTOM",
-            description:null,
-            timestamp:currentDate
+            type: "CUSTOM",
+            description: null,
+            timestamp: currentDate
         })
     };
 
@@ -651,7 +660,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         showMode('date');
     };
 
-    const deleteLeadHandler = async() => {
+    const deleteLeadHandler = async () => {
         setShowLoader(true)
         refRBSheet.current.close()
         try {
@@ -699,6 +708,87 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
         setShowLoader(false)
     }
 
+    const leadStatusHandler = () => {
+        refRBSheet.current.close()
+        refLeadStatus.current.open()
+    }
+
+    const leadStatusCheckBoxHandler = async (value) => {
+        setLeadStatusChecked(value);
+        setShowLoader(true)
+        refLeadStatus.current.close()
+        if (value == 1) {
+            updateLeadStatus({
+                status: 1
+            })
+        } else if (value == 2) {
+            updateLeadStatus({
+                status: 2
+            })
+        } else if (value == 3) {
+            updateLeadStatus({
+                status: 3
+            })
+        } else if (value == 4) {
+            updateLeadStatus({
+                status: 4
+            })
+        } else if (value == 5) {
+            updateLeadStatus({
+                status: 5
+            })
+        }
+    }
+
+    const updateLeadStatus = async (obj) => {
+        try {
+            const response = await axios.get(`/leads/status/${leadDetail.id}/${obj.status}`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            setShowLoader(false)
+            if (response?.data?.message) {
+                setShowToasterMsg(response?.data?.message)
+                setShowToaster(true)
+                setTimeout(() => {
+                    setShowToaster(false)
+                }, 1000);
+                loadLeadData();
+            }
+
+            if (response?.data?.rateLimit) {
+                setShowErrorToasterMsg(response?.data?.rateLimit)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+            if (response?.data?.error) {
+                if (response?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                }
+                setShowErrorToasterMsg(response?.data?.error)
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+
+        } catch (error) {
+            setShowLoader(false)
+            console.log(error);
+        }
+    }
+
+    const activityDescriptionHandler = (text) => {
+        setActivityDescription(text);
+    }
+
 
     return (
         <SafeAreaView style={{ ...styles.mainContainer, paddingTop: SBar.currentHeight }}>
@@ -741,7 +831,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         </View>
 
                         <View style={styles.FollowGroupButtonContainer}>
-                            <TouchableOpacity style={styles.FollowGroupButton} onPress={() =>refFollow.current.open()}>
+                            <TouchableOpacity style={styles.FollowGroupButton} onPress={() => refFollow.current.open()}>
                                 <MaterialIcons name="schedule" size={45} color="white" />
                                 <Text style={styles.FollowGroupText}>Schedule Follow Up</Text>
                             </TouchableOpacity>
@@ -752,16 +842,23 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         </View>
 
                         <View style={styles.detailContainer}>
-                            <Text style={styles.detailHeaderText}>LEAD DETAIL</Text>
-                            <Text style={styles.detailText}>Facebook Lead via {leadDetail.leadSource}</Text>
-                            <Text style={styles.detailText}>Campaign: {leadDetail.ad}</Text>
-                            <Text style={styles.detailText}>Adset: {leadDetail.adset}</Text>
-                            <Text style={styles.detailText}>Ad: {leadDetail.ad}</Text>
-                            <Text style={styles.detailText}>Full Name: {leadDetail.name}</Text>
-                            <Text style={styles.detailText}>Phone Number: {leadDetail.phone}</Text>
-                            <Text style={styles.detailText}>Job Title: {leadDetail.job}</Text>
-                            <Text style={styles.detailText}>Email: {leadDetail.email}</Text>
-                            <Text style={styles.detailText}>{leadDetail.extraInfo}</Text>
+                            <View style={styles.leadHeaderRow}>
+                                <Text style={styles.detailHeaderText}>LEAD DETAIL</Text>
+                                {leadDetail.newLead == 1 ? <Pressable onPress={() => refLeadStatus.current.open()} style={{ ...styles.leadStatusContainer, borderColor: '#ffa200' }}><Text style={{ color: '#ffa200' }}>New Lead</Text></Pressable> : null}
+                                {leadDetail.newLead == 2 ? <Pressable onPress={() => refLeadStatus.current.open()} style={{ ...styles.leadStatusContainer, borderColor: '#0000FF' }}><Text style={{ color: '#0000FF' }}>Cold</Text></Pressable> : null}
+                                {leadDetail.newLead == 3 ? <Pressable onPress={() => refLeadStatus.current.open()} style={{ ...styles.leadStatusContainer, borderColor: '#A020F0' }}><Text style={{ color: '#A020F0' }}>Warm</Text></Pressable> : null}
+                                {leadDetail.newLead == 4 ? <Pressable onPress={() => refLeadStatus.current.open()} style={{ ...styles.leadStatusContainer, borderColor: '#FFD700' }}><Text style={{ color: '#FFD700' }}>Hot</Text></Pressable> : null}
+                                {leadDetail.newLead == 5 ? <Pressable onPress={() => refLeadStatus.current.open()} style={{ ...styles.leadStatusContainer, borderColor: '#ff0000' }}><Text style={{ color: '#ff0000' }}>Dead Lead</Text></Pressable> : null}
+                            </View>
+                            {leadDetail.leadSource != null ? <Text style={styles.detailText}>Facebook Lead via {leadDetail.leadSource}</Text> : null}
+                            {leadDetail.ad != null ? <Text style={styles.detailText}>Campaign: {leadDetail.ad}</Text> : null}
+                            {leadDetail.adset != null ? <Text style={styles.detailText}>Adset: {leadDetail.adset}</Text> : null}
+                            {leadDetail.ad != null ? <Text style={styles.detailText}>Ad: {leadDetail.ad}</Text> : null}
+                            {leadDetail.name != null ? <Text style={styles.detailText}>Full Name: {leadDetail.name}</Text> : null}
+                            {leadDetail.phone != null ? <Text style={styles.detailText}>Phone Number: {leadDetail.phone}</Text> : null}
+                            {leadDetail.job != null ? <Text style={styles.detailText}>Job Title: {leadDetail.job}</Text> : null}
+                            {leadDetail.email != null ? <Text style={styles.detailText}>Email: {leadDetail.email}</Text> : null}
+                            {leadDetail.extraInfo != null ? <Text style={styles.detailText}>{leadDetail.extraInfo}</Text> : null}
                         </View>
 
                         <Pressable style={styles.noteContainer} onPress={() => refNote.current.open()} >
@@ -771,7 +868,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
 
                         <View style={styles.timelineContainer}>
                             <Text style={styles.timelineHeaderText}>TIMELINE</Text>
-                            <TouchableOpacity style={styles.timelineItemContainer} onPress={() => navigation.navigate('ActivityModal',{leadId:leadDetail.id, name:leadDetail.name})}>
+                            <TouchableOpacity style={styles.timelineItemContainer} onPress={() => navigation.navigate('ActivityModal', { leadId: leadDetail.id, name: leadDetail.name })}>
                                 <View style={styles.addActivityIcon}><Ionicons name="ios-add-sharp" size={25} color="#33b9ff" /></View>
                                 <Text style={styles.addActivityText}>Add Activity</Text>
                             </TouchableOpacity>
@@ -788,8 +885,8 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                         </View>
                                         <View style={styles.timelineDetailText}>
                                             <View style={styles.timelineDateContainer}>
-                                                <Text style={styles.timelineDate}>{new Date(item.created_at).getDate()} {getMonthInWord(new Date(item.created_at).getMonth() + 1)}</Text>
-                                                <Text style={styles.timelineTime}>{formatAMPM(new Date(item.created_at))}</Text>
+                                                <Text style={styles.timelineDate}>{new Date(item.timestamp !== null ? item.timestamp : item.created_at).getDate()} {getMonthInWord(new Date(item.timestamp !== null ? item.timestamp : item.created_at).getMonth() + 1)}</Text>
+                                                <Text style={styles.timelineTime}>{formatAMPM(new Date(item.timestamp !== null ? item.timestamp : item.created_at))}</Text>
                                             </View>
                                             <Text style={styles.timelineText}>{item.type}</Text>
                                         </View>
@@ -814,7 +911,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     </ScrollView>
                 </View>
                 <View style={styles.bottomContainer}>
-                    <TouchableOpacity style={styles.bottomButton} onPress={() =>navigation.navigate('ContentSenderList',{leadId:leadDetail.id})}>
+                    <TouchableOpacity style={styles.bottomButton} onPress={() => navigation.navigate('ContentSenderList', { leadId: leadDetail.id })}>
                         <Text style={styles.bottomButtonText}>QUICK RESPONSE</Text>
                     </TouchableOpacity>
                 </View>
@@ -828,20 +925,20 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                         <MaterialIcons name="group-add" size={20} color="#33b9ff" />
                         <Text style={styles.optionsText}>Add to Groups</Text>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.optionsContainer}>
+                    <TouchableOpacity onPress={() => leadStatusHandler()} style={styles.optionsContainer}>
                         <FontAwesome5 name="user-check" size={18} color="#33b9ff" />
-                        <Text style={styles.optionsText}>Mark as New Lead</Text>
-                    </TouchableOpacity> */}
+                        <Text style={styles.optionsText}>Update Lead Status</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => deleteLeadHandler()} style={styles.optionsContainer}>
                         <MaterialIcons name="delete" size={20} color="#33b9ff" />
                         <Text style={styles.optionsText}>Delete Lead</Text>
                     </TouchableOpacity>
                 </View>
             </BottomMaskPopUp>
-            <BottomMaskPopUp refRBSheet={refCallLog} height={300}>
+            <BottomMaskPopUp refRBSheet={refCallLog} height={500}>
                 <View styles={styles.optionsMainContainer}>
                     <View style={styles.logOptionsMainContainer}>
-                        <View style={styles.logIconContainer}>
+                        <View style={styles.logActivityIconContainer}>
                             <View style={styles.SocialButton}>
                                 {activityLogType === "Phone Call" ? <Ionicons name="call" size={25} color="white" /> : null}
                                 {activityLogType === "Message" ? <MaterialIcons name="message" size={25} color="white" /> : null}
@@ -849,8 +946,16 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                 {activityLogType === "Whatsapp" ? <Ionicons name="logo-whatsapp" size={25} color="white" /> : null}
                             </View>
                             <Text style={styles.logText}>{activityLogType}</Text>
+                            <View style={styles.inputGroupContainer}>
+                                <Text style={styles.label}>Description</Text>
+                                {activityDescriptionError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{activityDescriptionErrorValue}</Text> : null}
+                                <View style={styles.inputTextAreaBigContainer}>
+                                    <TextInput placeholder="Enter description" style={styles.textAreaActivity} multiline={true} numberOfLines={4} placeholderTextColor={activityDescriptionError ? "red" : "#ccc"} onChangeText={text => activityDescriptionHandler(text)} value={activityDescription} />
+
+                                </View>
+                            </View>
                         </View>
-                        <View style={styles.logBtnContainer}>
+                        <View style={styles.logAtivityBtnContainer}>
                             <TouchableOpacity style={styles.LogApproveBtn} onPress={() => saveActivityRefHandler()}>
                                 <Text style={styles.logBtnText}>Add {activityLogType} To Log Activity</Text>
                             </TouchableOpacity>
@@ -941,35 +1046,84 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                                 <Text style={styles.checkBoxText}>Today</Text>
                                 {followChecked === "TODAY" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("TOMORROW")} >
                                 <Text style={styles.checkBoxText}>Tomorrow</Text>
                                 {followChecked === "TOMORROW" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("CUSTOM")} >
                                 <Text style={styles.checkBoxText}>Select custom date & time</Text>
                                 {followChecked === "CUSTOM" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("SOMEDAY")} >
                                 <Text style={styles.checkBoxText}>Someday</Text>
                                 {followChecked === "SOMEDAY" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => followCheckBoxHandler("NEVER")} >
                                 <Text style={styles.checkBoxText}>Never</Text>
                                 {followChecked === "NEVER" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
+                                }
+                            </TouchableOpacity>
+
+
+                        </ScrollView>
+                    </View>
+                </View>
+            </BottomMaskPopUp>
+
+            <BottomMaskPopUp refRBSheet={refLeadStatus} height={390}>
+                <View styles={styles.optionsMainContainer}>
+                    <View style={styles.optionsHeaderContainer}>
+                        <Text style={styles.optionsHeaderText}>Schedule Follow Up</Text>
+                    </View>
+                    <View style={[styles.groupOptionScrollBackground]}>
+                        <ScrollView style={[styles.groupOptionScroll]}>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => leadStatusCheckBoxHandler("1")} >
+                                <Text style={styles.checkBoxText}>New Lead</Text>
+                                {leadStatusChecked == 1 ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => leadStatusCheckBoxHandler("2")} >
+                                <Text style={styles.checkBoxText}>Cold</Text>
+                                {leadStatusChecked == 2 ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => leadStatusCheckBoxHandler("3")} >
+                                <Text style={styles.checkBoxText}>Warm</Text>
+                                {leadStatusChecked == 3 ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => leadStatusCheckBoxHandler("4")} >
+                                <Text style={styles.checkBoxText}>Hot</Text>
+                                {leadStatusChecked == 4 ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
+                                }
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.checkBoxContainer} onPress={() => leadStatusCheckBoxHandler("5")} >
+                                <Text style={styles.checkBoxText}>Dead Lead</Text>
+                                {leadStatusChecked == 5 ?
+                                    <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
 
@@ -990,7 +1144,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                 />
             )}
 
-            <Loader status={showLoader} />
+            <FacebookLoader status={showLoader} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
             <Toaster message={showToasterMsg} status={showToaster} />
 

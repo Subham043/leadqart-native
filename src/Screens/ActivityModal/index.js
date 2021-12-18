@@ -32,6 +32,10 @@ const ActivityModal = ({ navigation, route }) => {
     const [modeDateTime, setModeDateTime] = useState('date');
     const [showDateTime, setShowDateTime] = useState(false);
 
+    const [message, setMessage] = useState("")
+    const [messageErrorValue, setMessageErrorValue] = useState("")
+    const [messageError, setMessageError] = useState(false)
+
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
@@ -45,7 +49,7 @@ const ActivityModal = ({ navigation, route }) => {
         setShowDateTime(Platform.OS === 'ios');
         setDate(currentDate);
         setDateInput(currentDate);
-        if(modeDateTime==="date") {
+        if (modeDateTime === "date") {
             showMode('time');
         }
     };
@@ -59,7 +63,7 @@ const ActivityModal = ({ navigation, route }) => {
         showMode('date');
     };
 
-    
+
 
     const checkBoxHandler = (value) => {
         setIsChecked(value)
@@ -111,6 +115,10 @@ const ActivityModal = ({ navigation, route }) => {
         }
     }
 
+    const messageHandler = (text) => {
+        setMessage(text);
+    }
+
     const formatAMPM = (date) => {
         var hours = date.getHours();
         var minutes = date.getMinutes();
@@ -128,7 +136,8 @@ const ActivityModal = ({ navigation, route }) => {
         try {
             const response = await axios.post(`/activity/create/${leadId}`, {
                 type: activityLogType,
-                timestamp: dateInput
+                timestamp: dateInput,
+                description: message
             }, {
                 headers: {
                     'authorization': 'bearer ' + user,
@@ -211,6 +220,14 @@ const ActivityModal = ({ navigation, route }) => {
                                 <Text style={styles.uploadText}>SELECT</Text>
                             </Pressable>
                         </View>
+                        <View style={styles.inputGroupContainer}>
+                            <Text style={styles.label}>Description</Text>
+                            {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}
+                            <View style={styles.inputTextAreaBigContainer}>
+                                <TextInput placeholder="Enter description" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} value={message} />
+
+                            </View>
+                        </View>
                     </ScrollView>
                     <View style={styles.bottomContainer}>
                         <TouchableOpacity onPress={() => saveActivityRefHandler()}
@@ -241,28 +258,28 @@ const ActivityModal = ({ navigation, route }) => {
                                 <Text style={styles.checkBoxText}>Phone Call</Text>
                                 {isChecked === "Phone Call" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => checkBoxHandler("Message")} >
                                 <Text style={styles.checkBoxText}>Message</Text>
                                 {isChecked === "Message" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => checkBoxHandler("Email")} >
                                 <Text style={styles.checkBoxText}>Email</Text>
                                 {isChecked === "Email" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.checkBoxContainer} onPress={() => checkBoxHandler("Whatsapp")} >
                                 <Text style={styles.checkBoxText}>Whatsapp</Text>
                                 {isChecked === "Whatsapp" ?
                                     <Fontisto name="checkbox-active" size={18} color="#33b9ff" /> :
-                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" /> 
+                                    <Fontisto name="checkbox-passive" size={18} color="#33b9ff" />
                                 }
                             </TouchableOpacity>
 

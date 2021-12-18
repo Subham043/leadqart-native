@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { StatusBar as SBar } from 'react-native'
 import styles from './styles'
@@ -13,6 +13,7 @@ import { setReload, selectReload } from "../../../app/feature/reloadSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import axios from "../../../axios"
+import Markdown from 'react-native-simple-markdown'
 
 const ViewMessageScreen = ({ route,navigation }) => {
 
@@ -25,6 +26,7 @@ const ViewMessageScreen = ({ route,navigation }) => {
 
     const [title, setTitle] = useState(name)
     const [message, setMessage] = useState(description)
+    const [image, setImage] = useState("")
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -103,6 +105,7 @@ const ViewMessageScreen = ({ route,navigation }) => {
             if (resp?.data?.message) {
                 setTitle(resp?.data?.contentMessage?.title)
                 setMessage(resp?.data?.contentMessage?.message)
+                setImage(resp?.data?.contentMessage?.image)
             }
 
             if (resp?.data?.error) {
@@ -146,7 +149,8 @@ const ViewMessageScreen = ({ route,navigation }) => {
 
                         <View style={styles.detailContainer}>
                             <Text style={styles.detailHeaderText}>MESSAGE TEMPLATE</Text>
-                            <Text style={styles.detailText}>{message}</Text>
+                            <Image source={{uri:`https://leadqart.herokuapp.com/uploads/${image}`}} style={styles.pdfImage} />
+                            <Text style={styles.detailText}><Markdown>{message}</Markdown></Text>
                         </View>
 
                     </ScrollView>

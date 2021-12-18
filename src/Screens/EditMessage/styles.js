@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         width:'100%',
-        height:250,
+        minHeight:350,
         paddingHorizontal:10,
         paddingVertical:5,
       },
@@ -83,7 +83,46 @@ const styles = StyleSheet.create({
         color:'#fff',
         fontWeight: 'bold',
         fontSize:20,
-      }
+      },
+
+      editor: {
+        backgroundColor: "black",
+        width:'100%'
+      },
+      rich: {
+        minHeight: 300,
+        width:'100%'
+      },
+      richBar: {
+        height: 50,
+        width:'100%',
+        backgroundColor: "#F5FCFF",
+      },
+
+      inputFileContainer: {
+        backgroundColor: '#fff',
+        borderBottomColor: "gray",
+        borderBottomWidth: 0.5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        height: 90,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+
+      inputText: {
+        color: 'gray',
+        width: '70%',
+    },
+
+    uploadText: {
+        color: '#ffa200',
+        fontWeight: 'bold',
+        textAlign: 'right',
+        width: '30%',
+    },
     
 })
 

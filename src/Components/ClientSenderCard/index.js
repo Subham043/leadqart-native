@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import styles from './styles'
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ClientSenderCard = ({ navigation, item, type, typeId }) => {
 
@@ -44,20 +45,28 @@ const ClientSenderCard = ({ navigation, item, type, typeId }) => {
                             {item.newLead===1 ?
                             <SimpleLineIcons name="badge" size={30} color="#ffa200" /> : null }
                         </View>
-                        <Text style={styles.description} numberOfLines={2}>Facebook Lead via {(item.facebookPage).length!=0?item.facebookPage:item.leadSource}, Campaign: {(item.adset).length!=0?item.adset:item.ad}, Ad-set</Text>
+                        <Text style={styles.description} numberOfLines={1}>Facebook Lead via {(item.facebookPage).length!=0?item.facebookPage:item.leadSource}, Campaign: {(item.adset).length!=0?item.adset:item.ad}, Ad-set</Text>
                     </View>
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.leftContainer}>
-                        <View style={styles.bottomTextContainer}>
+                    {(item.facebookPage) == null || item.facebookPage==="" ?
+                        <View style={{ ...styles.bottomTextContainer, backgroundColor: '#953553', }}>
+                            <AntDesign name="star" size={20} color="#fff" />
+                            <Text numberOfLines={1} style={styles.bottomText}>General Lead</Text>
+                        </View> :
+                        <View style={{ ...styles.bottomTextContainer, backgroundColor: '#4267B2', }}>
                             <EvilIcons name="sc-facebook" size={20} color="#fff" />
-                            <Text style={styles.bottomText}>{(item.facebookPage).length!=0?item.facebookPage:item.leadSource}</Text>
+                            <Text numberOfLines={1} style={styles.bottomText}>{item.facebookPage}</Text>
                         </View>
+                    }
                     </View>
                     <View style={styles.rightContainer}>
-                        <View style={styles.rightBottomTextContainer}>
-                        <Text style={styles.rightBottomText}>Saritha Splendour Lead</Text>
-                        </View>
+                    {item.newLead == 1 ? <View style={{ ...styles.rightBottomTextContainer, backgroundColor: '#ffa200', }}><Text style={styles.rightBottomText}>New Lead</Text></View> : null}
+                    {item.newLead == 2 ? <View style={{ ...styles.rightBottomTextContainer, backgroundColor: '#0000FF', }}><Text style={styles.rightBottomText}>Cold</Text></View> : null}
+                    {item.newLead == 3 ? <View style={{ ...styles.rightBottomTextContainer, backgroundColor: '#A020F0', }}><Text style={styles.rightBottomText}>Warm</Text></View> : null}
+                    {item.newLead == 4 ? <View style={{ ...styles.rightBottomTextContainer, backgroundColor: '#FFD700', }}><Text style={styles.rightBottomText}>Hot</Text></View> : null}
+                    {item.newLead == 5 ? <View style={{ ...styles.rightBottomTextContainer, backgroundColor: '#ff0000', }}><Text style={styles.rightBottomText}>Dead Lead</Text></View> : null}
                     </View>
                 </View>
             </TouchableOpacity>

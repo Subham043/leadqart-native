@@ -32,6 +32,10 @@ const ActivityEditModal = ({ navigation, route }) => {
     const [modeDateTime, setModeDateTime] = useState('date');
     const [showDateTime, setShowDateTime] = useState(false);
 
+    const [message, setMessage] = useState(activity.description!== null?activity.description:"")
+    const [messageErrorValue, setMessageErrorValue] = useState("")
+    const [messageError, setMessageError] = useState(false)
+
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
@@ -122,13 +126,18 @@ const ActivityEditModal = ({ navigation, route }) => {
         return strTime;
     }
 
+    const messageHandler = (text) => {
+        setMessage(text);
+    }
+
     const saveActivityRefHandler = async () => {
 
         setShowLoader(true)
         try {
             const response = await axios.post(`/activity/edit/${activity.id}`, {
                 type: activityLogType,
-                timestamp: dateInput
+                timestamp: dateInput,
+                description: message
             }, {
                 headers: {
                     'authorization': 'bearer ' + user,
@@ -210,6 +219,14 @@ const ActivityEditModal = ({ navigation, route }) => {
                                 </View>
                                 <Text style={styles.uploadText}>SELECT</Text>
                             </Pressable>
+                        </View>
+                        <View style={styles.inputGroupContainer}>
+                            <Text style={styles.label}>Description</Text>
+                            {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}
+                            <View style={styles.inputTextAreaBigContainer}>
+                                <TextInput placeholder="Enter description" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} value={message} />
+
+                            </View>
                         </View>
                     </ScrollView>
                     <View style={styles.bottomContainer}>

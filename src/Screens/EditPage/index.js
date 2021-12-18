@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Text, TouchableOpacity, View, TextInput, ScrollView, Pressable, Keyboard, Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import styles from './styles'
@@ -11,6 +11,7 @@ import axios from "../../../axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux"
 import Toaster from '../../Components/Toaster'
+import { MarkdownEditor } from 'react-native-markdown-editor';
 
 const AddPageScreen = ({ navigation, route }) => {
 
@@ -29,6 +30,7 @@ const AddPageScreen = ({ navigation, route }) => {
     const [imageErrorValue, setImageErrorValue] = useState("")
     const [imageError, setImageError] = useState(false)
     const [description, setDescription] = useState(desc)
+    
     const [descriptionErrorValue, setDescriptionErrorValue] = useState("")
     const [descriptionError, setDescriptionError] = useState(false)
     const [youtubeVideo, setYoutubeVideo] = useState(yv)
@@ -43,6 +45,7 @@ const AddPageScreen = ({ navigation, route }) => {
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
+
 
     const titleHandler = (text) => {
         setTitle(text);
@@ -66,11 +69,7 @@ const AddPageScreen = ({ navigation, route }) => {
             setDescriptionError(true)
             setDescriptionErrorValue('Please enter page description')
             return;
-        } else if (!(/^[a-z 0-9~%.:_\@\-\/\&+=,]+$/i.test(text))) {
-            setDescriptionError(true)
-            setDescriptionErrorValue('Please enter a valid page description')
-            return;
-        } else {
+        }else {
             setDescriptionError(false)
             setDescriptionErrorValue('')
         }

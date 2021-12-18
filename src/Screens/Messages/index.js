@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ScrollView, View, RefreshControl } from 'react-native'
-import MessageCard from '../../Components/MessageCard';
+import NewMessageCard from '../../Components/NewMessageCard';
 import styles from './styles'
 import { FloatingAction } from "react-native-floating-action";
 import MessageCardPlaceholder from '../../Components/MessageCardPlaceholder'
@@ -111,11 +111,11 @@ const MessageScreen = ({ navigation, tabIndexNumber }) => {
                 {loading ? <MessageCardPlaceholder /> : null}
                 {searchText.length > 0 && tabIndexNumber === 0 ?
                 searchData.map((item, index) => {
-                    return (<MessageCard id={item.id} name={item.title} description={item.message} key={index} navigation={navigation} />);
+                    return (<NewMessageCard id={item.id} name={item.title} description={item.message} image={item.image} key={index} navigation={navigation} />);
                 })
                 :
                 messageData.map((item, index) => {
-                    return (<MessageCard id={item.id} name={item.title} description={item.message} key={index} navigation={navigation} />);
+                    return (<NewMessageCard id={item.id} name={item.title} description={item.message} image={item.image} key={index} navigation={navigation} />);
                 })
                 }
             </ScrollView>
