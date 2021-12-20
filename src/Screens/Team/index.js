@@ -68,6 +68,7 @@ const TeamScreen = ({ navigation, tabIndexNumber }) => {
                     'authorization': 'bearer ' + user,
                 },
             });
+            // console.log(resp?.data?.teams);
             if (resp?.data?.message) {
                 // setLeadData([...resp?.data?.leads])
                 // setLoadng(false)

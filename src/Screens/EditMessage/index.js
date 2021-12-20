@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View, TextInput, ScrollView, Keyboard, Pressable } from 'react-native';
 import styles from './styles'
 import Loader from '../../Components/Loader'
@@ -20,7 +20,7 @@ const EditMessageScreen = ({ navigation, route }) => {
     const dispatch = useDispatch();
 
     const { id, name, description } = route.params;
-    
+    console.log(description);
     const [title, setTitle] = useState(name)
     const [titleErrorValue, setTitleErrorValue] = useState("")
     const [titleError, setTitleError] = useState(false)
@@ -283,7 +283,7 @@ const EditMessageScreen = ({ navigation, route }) => {
                         {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}
                         <View style={styles.inputTextAreaContainer}>
                             {/* <TextInput placeholder="Enter message template" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} defaultValue={message} /> */}
-                            <MarkdownEditor onMarkdownChange={text => messageHandler(text)} />
+                            <MarkdownEditor onMarkdownChange={text => messageHandler(text)} defaultText={message} />
                         </View>
                     </View>
                 </ScrollView>

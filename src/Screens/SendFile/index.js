@@ -100,11 +100,11 @@ const SendFileScreen = ({ route, navigation }) => {
 
     const sendMessageHandler = async (messageType) => {
         if(messageType==='Whatsapp'){
-            Linking.openURL(`whatsapp://send?text=https://leadqart.herokuapp.com/uploads/${upload}&phone=+91${leadDetail.phone}`)
+            Linking.openURL(`whatsapp://send?text=http://156.67.217.238:8080/uploads/${upload}&phone=+91${leadDetail.phone}`)
         }else if(messageType==='Message'){
             let url = `sms:${leadDetail.phone}`;
             let query = qs.stringify({
-                body: `https://leadqart.herokuapp.com/uploads/${upload}`,
+                body: `http://156.67.217.238:8080/uploads/${upload}`,
             });
             if (query.length) {
                 Platform.OS === 'android' ? url += `?${query}` : url += `&${query}`;
@@ -116,7 +116,7 @@ const SendFileScreen = ({ route, navigation }) => {
         }else if(messageType==='Email'){
             let url = `mailto:${leadDetail.email}`;
             let query = qs.stringify({
-                body: `https://leadqart.herokuapp.com/uploads/${upload}`,
+                body: `http://156.67.217.238:8080/uploads/${upload}`,
             });
             if (query.length) {
                 url += `?${query}`;

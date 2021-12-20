@@ -45,7 +45,7 @@ const ClientSenderCard = ({ navigation, item, type, typeId }) => {
                             {item.newLead===1 ?
                             <SimpleLineIcons name="badge" size={30} color="#ffa200" /> : null }
                         </View>
-                        <Text style={styles.description} numberOfLines={1}>Facebook Lead via {(item.facebookPage).length!=0?item.facebookPage:item.leadSource}, Campaign: {(item.adset).length!=0?item.adset:item.ad}, Ad-set</Text>
+                        <Text style={styles.description} numberOfLines={1}>Facebook Lead via {(item.facebookPage)!=null?item.facebookPage:item.leadSource}, Campaign: {(item.adset)!=null?item.adset:item.ad}, Ad-set</Text>
                     </View>
                 </View>
                 <View style={styles.bottomContainer}>

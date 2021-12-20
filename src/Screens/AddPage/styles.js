@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         width: '100%',
-        minHeight: 350,
+        height: 150,
         paddingHorizontal: 10,
         paddingVertical: 5,
     },

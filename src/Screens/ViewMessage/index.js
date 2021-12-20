@@ -149,7 +149,7 @@ const ViewMessageScreen = ({ route,navigation }) => {
 
                         <View style={styles.detailContainer}>
                             <Text style={styles.detailHeaderText}>MESSAGE TEMPLATE</Text>
-                            <Image source={{uri:`https://leadqart.herokuapp.com/uploads/${image}`}} style={styles.pdfImage} />
+                            <Image source={{uri:`http://156.67.217.238:8080/uploads/${image}`}} style={styles.pdfImage} />
                             <Text style={styles.detailText}><Markdown>{message}</Markdown></Text>
                         </View>
 

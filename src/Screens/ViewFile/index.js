@@ -145,7 +145,7 @@ const ViewFileScreen = ({ route, navigation }) => {
                 <View style={styles.middleContainer}>
                     <ScrollView>
 
-                        <TouchableOpacity style={styles.messageMainContainer}>
+                        <TouchableOpacity style={styles.messageMainContainer} onPress={() => navigation.navigate('PdfView',{file:upload})}>
                             <View style={styles.leftMainContainer}>
                                 <View style={styles.pdfContainer}>
                                     <FontAwesome5 name="file-pdf" size={40} color="gray" />

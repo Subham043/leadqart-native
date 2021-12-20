@@ -43,6 +43,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { login, logout, selectUser } from "../../app/feature/userSlice"
 import { setRefreshToken, removeRefreshToken } from "../../app/feature/refreshTokenSlice"
 import WebPage from '../Screens/WebPage';
+import PdfView from '../Screens/PdfView';
 
 const Stack = createNativeStackNavigator();
 
@@ -68,6 +69,7 @@ const Router = () => {
                     'refreshtoken': refreshToken,
                 },
             });
+            
             if (response?.data?.message) {
                 if (mounted) {
                     setUserRedux(response?.data.accessToken, response?.data.refreshToken)
@@ -328,6 +330,11 @@ const Router = () => {
                                 <Stack.Screen name="ActivityEditModal" component={ActivityEditModal} options={{ headerShown: false }} />
                                 <Stack.Screen name="WebPage" component={WebPage} options={{
                                     title: 'Content Page Preview', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }} />
+                                <Stack.Screen name="PdfView" component={PdfView} options={{
+                                    title: 'Content File Preview', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }} />
