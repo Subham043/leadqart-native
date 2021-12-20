@@ -1,7 +1,7 @@
 import React from 'react'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useWindowDimensions, Text } from 'react-native';
-import FacebookScreen from '../Screens/Facebook/index'
+import TeamScreen from '../Screens/Team/index'
 import AllClientsScreen from '../Screens/AllClients/index'
 import GroupsScreen from '../Screens/Groups/index'
 
@@ -37,7 +37,7 @@ const ClientTab = ({navigation}) => {
               case 'first':
               return <AllClientsScreen navigation={navigation} tabIndexNumber={index} />;
               case 'second':
-              return <FacebookScreen navigation={navigation} tabIndexNumber={index} />;
+              return <TeamScreen navigation={navigation} tabIndexNumber={index} />;
               case 'third':
               return <GroupsScreen navigation={navigation} tabIndexNumber={index} />;
               default:
