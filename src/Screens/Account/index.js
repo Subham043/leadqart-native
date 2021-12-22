@@ -47,17 +47,17 @@ const AccountScreen = ({ navigation }) => {
                 <View style={styles.HeaderContainer}>
                     <Text style={styles.HeaderText}>Account Preferences</Text>
                 </View>
-                <AccountScreenButton leftText="Settings" />
+                {/* <AccountScreenButton leftText="Settings" /> */}
                 <AccountScreenButton leftText="Integrations" link="Integration" navigation={navigation} />
-                <AccountScreenButton leftText="Subscription" rightText="ACTIVE" />
+                {/* <AccountScreenButton leftText="Subscription" rightText="ACTIVE" /> */}
             </View>
-            <View style={styles.PreferenceMainContainer}>
+            {/* <View style={styles.PreferenceMainContainer}>
                 <View style={styles.HeaderContainer}>
                     <Text style={styles.HeaderText}>Customer Support</Text>
                 </View>
                 <AccountScreenButton leftText="User Guide" />
                 <AccountScreenButton leftText="Contact Us" />
-            </View>
+            </View> */}
             <View style={styles.PreferenceMainContainer}>
                 <TouchableOpacity style={styles.logoutContainer} onPress={() => logoutHandler()}>
                     <Text style={styles.logoutText}>Logout</Text>
