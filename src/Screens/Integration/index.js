@@ -11,6 +11,9 @@ import ErrorToaster from '../../Components/ErrorToaster'
 import { useDispatch, useSelector } from "react-redux"
 import { logout, selectUser } from "../../../app/feature/userSlice"
 import { removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import * as Google from 'expo-google-app-auth';
+import * as Expo from 'expo';
+import Toaster from '../../Components/Toaster'
 
 const IntegrationScreen = ({ navigation }) => {
 
@@ -18,8 +21,10 @@ const IntegrationScreen = ({ navigation }) => {
     const user = useSelector(selectUser)
 
     const [showLoader, setShowLoader] = useState(false)
-    const [showErrorToaster, setShowErrorToaster] = useState("")
+    const [showErrorToaster, setShowErrorToaster] = useState(false)
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
+    const [showToaster, setShowToaster] = useState(false)
+    const [showToasterMsg, setShowToasterMsg] = useState("")
 
     async function facebookLogIn() {
         setShowLoader(true)
@@ -70,10 +75,77 @@ const IntegrationScreen = ({ navigation }) => {
         setShowLoader(false)
     }
 
+    async function signInWithGoogleAsync() {
+        try {
+          const result = await Google.logInAsync({
+            behavior: 'web',
+            iosClientId: "550396145836-ac7a3vino7pe8ubfue04mrn26he0obp3.apps.googleusercontent.com",
+            androidClientId: "550396145836-ci8njjfhjfuf3b5bgqj1j3uitmjaakql.apps.googleusercontent.com",
+            scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive'],
+          });
+    
+          if (result.type === 'success') {
+            console.log(result);
+            try {
+                const storeResponse = await storeGoogleDetails(result.accessToken);
+                console.log(storeResponse);
+                if(storeResponse=="google token stored successfully"){
+                    setShowToasterMsg("Configured successfully")
+                    setShowToaster(true)
+                    setTimeout(() => {
+                        setShowToaster(false)
+                    }, 1000);
+                }else{
+                    setShowErrorToasterMsg("Something went wrong. Please try again!")
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+                }
+            } catch (error) {
+                setShowErrorToasterMsg("Something went wrong. Please try again!")
+                setShowErrorToaster(true)
+                setTimeout(() => {
+                    setShowErrorToaster(false)
+                }, 1000);
+            }
+          } else {
+            setShowErrorToasterMsg("User cancelled configuration");
+            setShowErrorToaster(true)
+            setTimeout(() => {
+                setShowErrorToaster(false)
+            }, 1000);
+            return { cancelled: true };
+          }
+        } catch (e) {
+            setShowErrorToasterMsg("Something went wrong. Please try again!")
+                    setShowErrorToaster(true)
+                    setTimeout(() => {
+                        setShowErrorToaster(false)
+                    }, 1000);
+          return { error: true };
+        }
+      }
+
     const storeFacebookDetails = (access_token, fbId, fbName) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await axios.post('/facebook/connection/app', { access_token, fbId, fbName }, {
+                    headers: {
+                        'authorization': 'bearer ' + user,
+                    },
+                });
+                resolve(response.data.message);
+            } catch (error) {
+                reject("Something went wrong. Please try again!");
+            }
+        })
+    }
+
+    const storeGoogleDetails = (access_token) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await axios.post('/google/connection/app', { access_token }, {
                     headers: {
                         'authorization': 'bearer ' + user,
                     },
@@ -104,8 +176,25 @@ const IntegrationScreen = ({ navigation }) => {
                     </View>
                 </View>
             </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.accountContainer} onPress={signInWithGoogleAsync}>
+                <View style={styles.leftContainer}>
+                    <View style={styles.leftIconContainer}>
+                        <AntDesign name="google" size={35} color="#fff" />
+                    </View>
+                    <View style={styles.leftTextContainer}>
+                        <Text style={styles.nameHeading}>Google Drive</Text>
+                        <Text style={styles.emailText}>Integrate google drive to import data from csv</Text>
+                    </View>
+                </View>
+                <View style={styles.rightContainer}>
+                    <View style={styles.rightInnerIconContainer}>
+                        <Text style={styles.configureText}>Configure <AntDesign name="right" size={15} color="#ffa200" /></Text>
+                    </View>
+                </View>
+            </TouchableOpacity> */}
             <Loader status={showLoader} />
             <ErrorToaster message={showErrorToasterMsg} status={showErrorToaster} />
+            <Toaster message={showToasterMsg} status={showToaster} />
         </SafeAreaView>
     )
 }

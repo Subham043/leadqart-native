@@ -278,7 +278,7 @@ const AddMessageScreen = ({ navigation }) => {
                         <Text style={styles.label}>Message Template</Text>
                         {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}
                         <View style={styles.inputTextAreaContainer}>
-                        <MarkdownEditor onMarkdownChange={text => messageHandler(text)} />
+                        <MarkdownEditor onMarkdownChange={text => messageHandler(text)} style={{width:'100%'}} />
                             {/* <TextInput placeholder="Enter message template" style={styles.textArea} multiline={true} numberOfLines={4} placeholderTextColor={messageError ? "red" : "#ccc"} onChangeText={text => messageHandler(text)} value={messsage}  /> */}
                             
                             

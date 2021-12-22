@@ -146,6 +146,13 @@ const styles = StyleSheet.create({
         fontSize:15
     },
 
+    pdfImage:{
+        resizeMode: 'stretch',
+        width:'100%',
+        height:100,
+        marginBottom:10
+    },
+
 })
 
 

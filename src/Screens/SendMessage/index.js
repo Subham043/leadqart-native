@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Platform } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Platform, Image, Share } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { StatusBar as SBar } from 'react-native'
 import styles from './styles'
@@ -16,11 +16,13 @@ import { logout, selectUser } from "../../../app/feature/userSlice"
 import axios from "../../../axios"
 import * as Linking from 'expo-linking';
 import qs from 'qs';
+import * as Sharing from 'expo-sharing';
 
-const SendMessageScreen = ({ route,navigation }) => {
+
+const SendMessageScreen = ({ route, navigation }) => {
 
     const refRBSheet = useRef();
-    const {messageId,itemId} = route.params;
+    const { messageId, itemId } = route.params;
 
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
@@ -28,6 +30,7 @@ const SendMessageScreen = ({ route,navigation }) => {
 
     const [title, setTitle] = useState("")
     const [message, setMessage] = useState("")
+    const [image, setImage] = useState("")
     const [leadDetail, setLeadDetail] = React.useState({});
 
     const [showLoader, setShowLoader] = useState(false)
@@ -35,7 +38,7 @@ const SendMessageScreen = ({ route,navigation }) => {
     const [showErrorToasterMsg, setShowErrorToasterMsg] = useState("")
     const [showToaster, setShowToaster] = useState(false)
     const [showToasterMsg, setShowToasterMsg] = useState("")
-    
+
 
     useEffect(() => {
         loadMessageData();
@@ -50,9 +53,11 @@ const SendMessageScreen = ({ route,navigation }) => {
                     'authorization': 'bearer ' + user,
                 },
             });
+
             if (resp?.data?.message) {
                 setTitle(resp?.data?.contentMessage?.title)
                 setMessage(resp?.data?.contentMessage?.message)
+                setImage(resp?.data?.contentMessage?.image)
             }
 
             if (resp?.data?.error) {
@@ -99,10 +104,36 @@ const SendMessageScreen = ({ route,navigation }) => {
         setShowLoader(false)
     }
 
+
+    const getFile = async () => {
+        let result = ""
+        var base64data = ""
+        result = await fetch(`http://156.67.217.238:8080/uploads/${image}`)
+            .then(r => r.blob()).then(blobFile => new File([blobFile], "image", { type: "image/png" }))
+        var reader = new FileReader();
+        reader.readAsDataURL(result);
+        reader.onloadend = async function () {
+            base64data = await reader.result;
+            // console.log(base64data);
+            const shareOptions = {
+                title: title,
+                message: message, // Note that according to the documentation at least one of "message" or "url" fields is required
+                url: `http://156.67.217.238:8080/uploads/${image}`,
+            };
+            // console.log(shareOptions);
+            // Share.share(shareOptions)
+            // Linking.openURL(`whatsapp://send?text=${base64data}&phone=+917892156160`)
+            // Sharing.shareAsync(base64data, shareOptions)
+        }
+    }
+
     const sendMessageHandler = async (messageType) => {
-        if(messageType==='Whatsapp'){
+        if (messageType === 'Whatsapp') {
             Linking.openURL(`whatsapp://send?text=${message}&phone=+91${leadDetail.phone}`)
-        }else if(messageType==='Message'){
+            
+            //   Share.share(shareOptions)
+            // console.log(getFile())
+        } else if (messageType === 'Message') {
             let url = `sms:${leadDetail.phone}`;
             let query = qs.stringify({
                 body: message,
@@ -114,7 +145,7 @@ const SendMessageScreen = ({ route,navigation }) => {
             if (canOpen) {
                 Linking.openURL(url)
             }
-        }else if(messageType==='Email'){
+        } else if (messageType === 'Email') {
             let url = `mailto:${leadDetail.email}`;
             let query = qs.stringify({
                 body: message,
@@ -139,7 +170,7 @@ const SendMessageScreen = ({ route,navigation }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
                         <MaterialIcons name="arrow-back" size={25} color="#fff" />
                     </TouchableOpacity>
-                        <Text style={styles.backButtonText}>{title}</Text>
+                    <Text style={styles.backButtonText}>{title}</Text>
                 </View>
                 <View style={styles.middleContainer}>
                     <ScrollView>
@@ -150,6 +181,7 @@ const SendMessageScreen = ({ route,navigation }) => {
 
                         <View style={styles.detailContainer}>
                             <Text style={styles.detailHeaderText}>MESSAGE TEMPLATE</Text>
+                            <Image source={{ uri: `http://156.67.217.238:8080/uploads/${image}` }} style={styles.pdfImage} />
                             <Text style={styles.detailText}>{message}</Text>
                         </View>
 

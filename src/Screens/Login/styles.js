@@ -3,8 +3,14 @@ import {StyleSheet, Dimensions } from 'react-native';
 const styles = StyleSheet.create({
     mainContainer:{
         flex:1,
+        height: Dimensions.get('window').height,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    ScrollContainer:{
+        flex:1,
+        height: Dimensions.get('window').height,
+        width: Dimensions.get('window').width,
     },
     backgroundImage:{
         width:Dimensions.get('window').width,
@@ -15,7 +21,7 @@ const styles = StyleSheet.create({
         width:Dimensions.get('window').width,
         height:100,
         resizeMode: "cover",
-        marginTop:30,
+        marginTop:110,
         transform: [
             { rotate: '180deg' },
           ]

@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   modalView: {
     backgroundColor: '#eee',
     width: '100%',
-    height: Dimensions.get('window').height - 90,
+    height: Dimensions.get('window').height - 50,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 15,
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     paddingHorizontal: 10,
     paddingTop: 10,
+    height:70
   },
 
   saveContainer: {

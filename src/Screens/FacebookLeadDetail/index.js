@@ -602,6 +602,7 @@ const FacebookLeadDetailScreen = ({ route, navigation }) => {
                     'authorization': 'bearer ' + user,
                 },
             });
+            
             setShowLoader(false)
             if (response?.data?.message) {
                 setShowToasterMsg(response?.data?.message)

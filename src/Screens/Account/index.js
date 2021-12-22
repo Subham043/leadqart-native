@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { login, logout, selectUser } from "../../../app/feature/userSlice"
 import { setRefreshToken, removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
 
+
 const AccountScreen = ({ navigation }) => {
 
     const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const AccountScreen = ({ navigation }) => {
         dispatch(logout());
         dispatch(removeRefreshToken());
     }
+    
 
     return (
         <SafeAreaView style={styles.mainContainer}>

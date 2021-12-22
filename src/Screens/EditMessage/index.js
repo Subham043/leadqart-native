@@ -161,7 +161,7 @@ const EditMessageScreen = ({ navigation, route }) => {
                     },
                 });
                 setShowLoader(false)
-                console.log(response?.data);
+                // console.log(response?.data);
                 if (response?.data?.message) {
                     // console.log(response?.data?.message);
                     setShowToasterMsg(response?.data?.message)
@@ -169,6 +169,7 @@ const EditMessageScreen = ({ navigation, route }) => {
                     setTimeout(() => {
                         setShowToaster(false)
                         dispatch(setReload(true));
+                        navigation.goBack()
                     }, 1000);
                 }
 

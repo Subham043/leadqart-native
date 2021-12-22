@@ -146,7 +146,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
-            <ScrollView>
+            <ScrollView style={styles.ScrollContainer}>
                 <ImageBackground source={require('../../../assets/images/blue-waves.png')} style={styles.backgroundImage} />
                 <View style={styles.innerContainer}>
                     <Image source={require('../../../assets/images/logo.png')} style={styles.logoImage} />

@@ -29,6 +29,13 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
             position: 2,
             color: "#33b9ff",
         },
+        // {
+        //     text: "Import Lead via google drive",
+        //     icon: require("../../../assets/images/page.png"),
+        //     name: "add_drive",
+        //     position: 2,
+        //     color: "#33b9ff",
+        // },
     ];
 
     const dispatch = useDispatch();
@@ -120,6 +127,7 @@ const AllClientsScreen = ({ navigation, tabIndexNumber }) => {
                 onPressItem={name => {
                     name === "add_lead" ? navigation.navigate('AddLead') : null;
                     name === "add_csv" ? navigation.navigate('ImportLead') : null;
+                    // name === "add_drive" ? navigation.navigate('AddDriveLead') : null;
                 }}
                 color="#ffa200"
             />
