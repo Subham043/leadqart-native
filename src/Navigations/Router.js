@@ -32,6 +32,8 @@ import NewLeadListScreen from '../Screens/NewLeadList/index'
 import FollowUpListScreen from '../Screens/FollowUpList/index'
 import LeadSearchListScreen from '../Screens/LeadSearchList/index'
 import ClientSenderListScreen from '../Screens/ClientSenderList/index'
+import AssignedLeadsListScreen from '../Screens/AssignedLeadsList/index'
+import AssignLeadsListScreen from '../Screens/AssignLeadsList/index'
 import ContentSenderListScreen from '../Screens/ContentSenderList/index'
 import LoadingScreen from '../Screens/Loading/index'
 import ActivityModal from '../Screens/ActivityModal/index'
@@ -322,6 +324,24 @@ const Router = () => {
                                 component={ClientSenderListScreen}
                                 options={{
                                     title: 'Select a client', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AssignedLeadsList"
+                                component={AssignedLeadsListScreen}
+                                options={{
+                                    title: 'Assigned Leads', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="AssignLeadsList"
+                                component={AssignLeadsListScreen}
+                                options={{
+                                    title: 'Assign Leads', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }}

@@ -7,17 +7,15 @@ import styles from './styles'
 
 const AllClientCard = ({ navigation, item }) => {
 
-
     const getInitials = (value) => {
         return value.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase();
     }
 
     return (
-        // <TouchableOpacity onPress={() => navigation.navigate('FacebookLeadDetail', {
-        //     leadId: item.id,
-        //     leadItem: item
-        // })} style={styles.cardContainer}>
-        <View style={styles.cardContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('AssignedLeadsList', {
+            memberId: item.memberId,
+            searchText:"Search clients and phonebook"
+        })} style={styles.cardContainer}>
             <View style={styles.topContainer}>
                 <View style={styles.avatarContainer}>
                     <View style={styles.avatarOuter}>
@@ -30,7 +28,7 @@ const AllClientCard = ({ navigation, item }) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 
