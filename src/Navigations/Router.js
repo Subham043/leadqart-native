@@ -18,6 +18,7 @@ import AddFileScreen from '../Screens/AddFile/index'
 import ImportLeadScreen from '../Screens/ImportLead/index'
 import AddPageScreen from '../Screens/AddPage/index'
 import AddLeadScreen from '../Screens/AddLead/index'
+import ProfileScreen from '../Screens/Profile/index'
 import AddDriveLeadScreen from '../Screens/AddDriveLead/index'
 import InviteUserScreen from '../Screens/InviteUser/index'
 import FacebookLeadDetailScreen from '../Screens/FacebookLeadDetail/index'
@@ -233,6 +234,15 @@ const Router = () => {
                                 component={AddLeadScreen}
                                 options={{
                                     title: 'Add Lead', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
+                                        alignItems: 'center',
+                                    }, headerTitleAlign: 'center'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="Profile"
+                                component={ProfileScreen}
+                                options={{
+                                    title: 'Edit Profile', headerStyle: { backgroundColor: '#33b9ff' }, headerTintColor: '#fff', headerTitleStyle: {
                                         alignItems: 'center',
                                     }, headerTitleAlign: 'center'
                                 }}

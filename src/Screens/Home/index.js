@@ -14,11 +14,11 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.heading}>Welcome</Text>
                 <Text style={styles.text}>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</Text>
                 <View style={styles.btnContainer}>
-                    <TouchableOpacity onPress={()=>navigation.navigate('Signup')}>
+                    {/* <TouchableOpacity onPress={()=>navigation.navigate('Signup')}>
                         <Text style={styles.btn1}>
                         Sign Up
                         </Text>
-                    </TouchableOpacity >
+                    </TouchableOpacity > */}
                     <TouchableOpacity onPress={()=>navigation.navigate('Signin')}>
                         <Text style={styles.btn2}>
                         Sign In

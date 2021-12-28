@@ -155,7 +155,7 @@ const ViewPageScreen = ({ route, navigation }) => {
                         <TouchableOpacity style={styles.messageMainContainer} onPress={() => navigation.navigate('WebPage',{id})}>
                             <View style={styles.leftMainContainer}>
                                 <View style={styles.pdfContainer}>
-                                    <Image source={{ uri: `http://156.67.217.238:8080/uploads/${upload}` }} style={styles.pdfImage} />
+                                    <Image source={{ uri: `http://api.leadqart.in/uploads/${upload}` }} style={styles.pdfImage} />
                                 </View>
                                 <View style={styles.textContainer}>
                                     <Text style={styles.title}>{title}</Text>

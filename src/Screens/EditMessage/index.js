@@ -28,11 +28,11 @@ const EditMessageScreen = ({ navigation, route }) => {
     const [messageErrorValue, setMessageErrorValue] = useState("")
     const [messageError, setMessageError] = useState(false)
 
-    const [image, setImage] = useState("")
-    const [filename, setFilename] = useState("Select a image file")
-    const [filetype, setFiletype] = useState("")
-    const [imageErrorValue, setImageErrorValue] = useState("")
-    const [imageError, setImageError] = useState(false)
+    // const [image, setImage] = useState("")
+    // const [filename, setFilename] = useState("Select a image file")
+    // const [filetype, setFiletype] = useState("")
+    // const [imageErrorValue, setImageErrorValue] = useState("")
+    // const [imageError, setImageError] = useState(false)
 
     const [showLoader, setShowLoader] = useState(false)
     const [showErrorToaster, setShowErrorToaster] = useState(false)
@@ -69,44 +69,44 @@ const EditMessageScreen = ({ navigation, route }) => {
         }
     }
 
-    const _pickDocument = async () => {
-        try {
-            const file = await DocumentPicker.getDocumentAsync({});
-            if (file.type === 'cancel') {
-                setImageError(true)
-                setImageErrorValue('Please select an image')
-                return;
-            }
+    // const _pickDocument = async () => {
+    //     try {
+    //         const file = await DocumentPicker.getDocumentAsync({});
+    //         if (file.type === 'cancel') {
+    //             setImageError(true)
+    //             setImageErrorValue('Please select an image')
+    //             return;
+    //         }
 
-            // if (file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf') {
-            //     setImageError(true)
-            //     setImageErrorValue('Please select an image')
-            //     return;
-            // }
-            switch (file.mimeType) {
-                case 'image/png':
-                    break;
-                case 'image/jpg':
-                    break;
-                case 'image/jpeg':
-                    break;
+    //         // if (file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf' || file.mimeType == 'application/pdf') {
+    //         //     setImageError(true)
+    //         //     setImageErrorValue('Please select an image')
+    //         //     return;
+    //         // }
+    //         switch (file.mimeType) {
+    //             case 'image/png':
+    //                 break;
+    //             case 'image/jpg':
+    //                 break;
+    //             case 'image/jpeg':
+    //                 break;
 
-                default:
-                    setImageError(true)
-                    setImageErrorValue('Please select an image')
-                    return;
-                    break;
-            }
+    //             default:
+    //                 setImageError(true)
+    //                 setImageErrorValue('Please select an image')
+    //                 return;
+    //                 break;
+    //         }
 
-            setImageError(false)
-            setImageErrorValue('')
-            setFilename(file.name);
-            setFiletype(file.mimeType);
-            setImage(Platform.OS === 'android' ? file.uri : file.uri.replace('file://', ''));
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //         setImageError(false)
+    //         setImageErrorValue('')
+    //         setFilename(file.name);
+    //         setFiletype(file.mimeType);
+    //         setImage(Platform.OS === 'android' ? file.uri : file.uri.replace('file://', ''));
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
 
     const createMessage = async () => {
@@ -131,31 +131,31 @@ const EditMessageScreen = ({ navigation, route }) => {
             setMessageErrorValue('')
         }
 
-        if (image == '') {
-            setImageError(true)
-            setImageErrorValue('Please select a image')
-            return;
-        } else {
-            setImageError(false)
-            setImageErrorValue('')
-        }
+        // if (image == '') {
+        //     setImageError(true)
+        //     setImageErrorValue('Please select a image')
+        //     return;
+        // } else {
+        //     setImageError(false)
+        //     setImageErrorValue('')
+        // }
 
-        if (titleError || messageError || imageError) {
+        if (titleError || messageError) {
             return;
         } else {
             setShowLoader(true)
             getTokens();
             try {
                 const data = new FormData();
-                let fileData = {
-                    uri: image,
-                    type: filetype,
-                    name: filename
-                };
-                data.append('image', fileData);
+                // let fileData = {
+                //     uri: image,
+                //     type: filetype,
+                //     name: filename
+                // };
+                // data.append('image', fileData);
                 data.append('title', title);
                 data.append('message', message);
-                const response = await axios.post(`/content-message/edit/${id}`, data, {
+                const response = await axios.post(`/content-message/edit/${id}`, {title, message}, {
                     headers: {
                         'authorization': 'bearer ' + user,
                     },
@@ -206,10 +206,10 @@ const EditMessageScreen = ({ navigation, route }) => {
                     setMessageErrorValue(response?.data?.errors?.message?.msg)
                 }
 
-                if (response?.data?.errors?.image) {
-                    setImageError(true)
-                    setImageErrorValue(response?.data?.errors?.image?.msg)
-                }
+                // if (response?.data?.errors?.image) {
+                //     setImageError(true)
+                //     setImageErrorValue(response?.data?.errors?.image?.msg)
+                // }
 
             } catch (error) {
                 setShowLoader(false)
@@ -271,14 +271,14 @@ const EditMessageScreen = ({ navigation, route }) => {
                             <TextInput placeholder="Enter message title" style={styles.input} placeholderTextColor={titleError ? "red" : "#ccc"} onChangeText={text => titleHandler(text)} defaultValue={title} />
                         </View>
                     </View>
-                    <View style={styles.inputGroupContainer}>
+                    {/* <View style={styles.inputGroupContainer}>
                         <Text style={styles.label}>Image</Text>
                         {imageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{imageErrorValue}</Text> : null}
                         <Pressable onPress={() => _pickDocument()} style={styles.inputFileContainer}>
                             <Text style={styles.inputText}>{filename}</Text>
                             <Text style={styles.uploadText}>UPLOAD</Text>
                         </Pressable>
-                    </View>
+                    </View> */}
                     <View style={styles.inputGroupContainer}>
                         <Text style={styles.label}>Message Template</Text>
                         {messageError ? <Text style={{ color: 'red', paddingVertical: 10, paddingHorizontal: 10, }}>{messageErrorValue}</Text> : null}

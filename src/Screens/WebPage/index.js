@@ -10,7 +10,7 @@ const { id } = route.params;
     <WebView
       style={styles.container}
       originWhitelist={['*']}
-      source={{ uri: `http://156.67.217.238:8080/content-page/view-page/${id}` }}
+      source={{ uri: `http://api.leadqart.in/content-page/view-page/${id}` }}
     />
   );
 }

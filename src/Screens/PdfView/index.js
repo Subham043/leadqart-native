@@ -10,7 +10,7 @@ const { file } = route.params;
     <WebView
       style={styles.container}
       originWhitelist={['*']}
-      source={{ uri: `http://156.67.217.238:8080/uploads/${file}` }}
+      source={{ uri: `http://api.leadqart.in/uploads/${file}` }}
     />
   );
 }

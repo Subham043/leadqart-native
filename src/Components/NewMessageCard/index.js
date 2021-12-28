@@ -11,9 +11,9 @@ const NewMessageCard = ({ name, id, description, image, navigation }) => {
             id,name,description,image
         })} >
             <View style={styles.leftMainContainer}>
-                <View style={styles.pdfContainer}>
-                    <Image source={{uri:`http://156.67.217.238:8080/uploads/${image}`}} style={styles.pdfImage} />
-                </View>
+                {/* <View style={styles.pdfContainer}>
+                    <Image source={{uri:`http://api.leadqart.in/uploads/${image}`}} style={styles.pdfImage} />
+                </View> */}
                 <View style={styles.textContainer}>
                     <Text style={styles.title}>{name}</Text>
                     <Text style={styles.description} numberOfLines={1}>{description}</Text>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, Text, View, TouchableOpacity } from 'react-native'
 import styles from './styles'
@@ -10,6 +10,8 @@ import axios from "../../../axios"
 import { useDispatch, useSelector } from "react-redux"
 import { login, logout, selectUser } from "../../../app/feature/userSlice"
 import { setRefreshToken, removeRefreshToken } from "../../../app/feature/refreshTokenSlice"
+import Loader from '../../Components/Loader'
+import { useIsFocused } from "@react-navigation/native";
 
 
 const AccountScreen = ({ navigation }) => {
@@ -17,24 +19,67 @@ const AccountScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const user = useSelector(selectUser)
 
+    const isFocused = useIsFocused();
+
+    const [name, setName] = useState(null)
+    const [email, setEmail] = useState("")
+    const [emailShort, setEmailShort] = useState("")
+
+    const [showLoader, setShowLoader] = useState(false)
+
     const logoutHandler = async() => {
         await AsyncStorage.removeItem('refreshToken')
         dispatch(logout());
         dispatch(removeRefreshToken());
+    }
+
+    useEffect(() => {
+        loadProfile()
+    }, [isFocused])
+
+    const loadProfile = async () => {
+        setShowLoader(true)
+        try {
+            const resp = await axios.get(`/profile`, {
+                headers: {
+                    'authorization': 'bearer ' + user,
+                },
+            });
+            
+            if (resp?.data?.message) {
+                setName(resp?.data?.user?.name!=null? resp?.data?.user?.name : null);
+                setEmail(resp?.data?.user?.email)
+                setEmailShort(resp?.data?.user?.email!=null ? (resp?.data?.user?.email).match(/^([^@]*)@/)[1] : "")
+            }
+
+            if (resp?.data?.error) {
+                console.log(resp?.data?.error);
+                if (resp?.data?.error === "Unauthorised") {
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
+                    dispatch(logout());
+                    dispatch(removeRefreshToken());
+                    return;
+                }
+            }
+
+
+        } catch (e) { console.log(e) }
+        setShowLoader(false)
     }
     
 
     return (
         <SafeAreaView style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#33b9ff" />
-            <TouchableOpacity style={styles.accountContainer}>
+            <TouchableOpacity style={styles.accountContainer} onPress={()=>navigation.navigate('Profile')}>
                 <View style={styles.leftContainer}>
                     <View style={styles.leftIconContainer}>
                         <FontAwesome5 name="user-alt" size={25} color="#fff" />
                     </View>
                     <View style={styles.leftTextContainer}>
-                        <Text style={styles.nameHeading}>Parabola</Text>
-                        <Text style={styles.emailText}>parabola5ine@gmail.com</Text>
+                        <Text style={styles.nameHeading} numberOfLines={1}>{name!=null?name:emailShort}</Text>
+                        <Text style={styles.emailText} numberOfLines={1}>{email}</Text>
                     </View>
                 </View>
                 <View style={styles.rightContainer}>
@@ -63,6 +108,7 @@ const AccountScreen = ({ navigation }) => {
                     <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
             </View>
+            <Loader status={showLoader} />
         </SafeAreaView>
     )
 }

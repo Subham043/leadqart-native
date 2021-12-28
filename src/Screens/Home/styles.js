@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     },
     btnContainer:{
         flexDirection:'row',
-        justifyContent:'space-between',
+        justifyContent:'center',
         alignItems:'center',
         marginTop:35,
     },
