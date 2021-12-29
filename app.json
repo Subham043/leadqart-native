@@ -10,6 +10,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "icon": "./assets/images/icon-phone.png",
+      "color": "#8edcd5",
+      "androidMode": "collapse"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },

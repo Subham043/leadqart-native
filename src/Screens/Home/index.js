@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { View, ImageBackground, Image, Text, TouchableOpacity } from 'react-native'
+import { View, ImageBackground, Image, Text, TouchableOpacity, Platform } from 'react-native'
 import styles from './styles'
 
 const HomeScreen = ({ navigation }) => {
+
+
     return (
         <View style={styles.mainContainer}>
             <StatusBar style="light" backgroundColor="#ffa200" />
@@ -19,9 +21,9 @@ const HomeScreen = ({ navigation }) => {
                         Sign Up
                         </Text>
                     </TouchableOpacity > */}
-                    <TouchableOpacity onPress={()=>navigation.navigate('Signin')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
                         <Text style={styles.btn2}>
-                        Sign In
+                            Sign In
                         </Text>
                     </TouchableOpacity >
                 </View>
